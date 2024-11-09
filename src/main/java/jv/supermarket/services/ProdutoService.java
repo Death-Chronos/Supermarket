@@ -1,5 +1,7 @@
 package jv.supermarket.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,10 @@ public class ProdutoService {
 
     private Boolean produtoExist(String nome, String marca) {
         return pr.existsByNomeAndMarca(nome, marca);
+    }
+    
+    public List<Produto> getAllProdutos() {
+        return pr.findAll();
     }
 
     public Produto saveProduto(Produto produto) {
@@ -63,6 +69,18 @@ public class ProdutoService {
         }
         throw new ResourceNotFoundException("Produto com o id: " + id + " não encontrado");
 
+    }
+
+    public List<Produto> getProdutosByNome(String nome) {
+       return pr.findProdutoByNome(nome);
+    }
+
+    public List<Produto> getProdutosByMarca(String marca) {
+        return pr.findProdutoByMarca(marca);
+    }
+
+    public List<Produto> getProdutosByMarcaAndNome(String marca, String nome){
+        return pr.findProdutoByMarcaAndNome(marca, nome);
     }
 
 }
