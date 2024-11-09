@@ -2,9 +2,12 @@ package jv.supermarket.services;
 
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jv.supermarket.DTOs.ProdutoDTO;
+import jv.supermarket.entities.Categoria;
 import jv.supermarket.entities.Produto;
 import jv.supermarket.exceptions.AlreadyExistException;
 import jv.supermarket.exceptions.ResourceNotFoundException;
@@ -90,16 +93,24 @@ public class ProdutoService {
         return pr.findByMarcaAndNome(marca, nome);
     }
 
-    public List<Produto> getProdutosByCategoriaNome(String nome) {
+    public List<ProdutoDTO> getProdutosByCategoriaNome(String nome) {
         if (cr.existsByNome(nome)) {
             List<Produto> produtos = pr.findByCategoriaNome(nome);
             if (produtos.isEmpty()) {
                 throw new ResourceNotFoundException("Não existem produtos pertencentes a categoria com o nome:" + nome);
             }
-            return produtos;
+            return produtos.stream().map(produto -> converterParaDTO(produto)).toList();
         }
         throw new ResourceNotFoundException("A categoria com o nome: " + nome + " não foi encontrada");
 
+    }
+
+    private ProdutoDTO converterParaDTO(Produto produto) {
+        ProdutoDTO produtoDTO = new ProdutoDTO();
+
+        BeanUtils.copyProperties(produto, produtoDTO);
+
+        return produtoDTO;
     }
 
 }

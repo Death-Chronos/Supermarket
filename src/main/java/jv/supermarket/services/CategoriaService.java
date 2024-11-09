@@ -3,10 +3,12 @@ package jv.supermarket.services;
 import java.util.List;
 
 import org.hibernate.Hibernate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+import jv.supermarket.DTOs.CategoriaDTO;
 import jv.supermarket.entities.Categoria;
 import jv.supermarket.entities.Produto;
 import jv.supermarket.exceptions.AlreadyExistException;
@@ -73,5 +75,13 @@ public class CategoriaService {
         }
         
         return cr.save(categoria);
+    }
+
+    private CategoriaDTO converterParaDTO(Categoria categoria){
+        CategoriaDTO categoriaDTO = new CategoriaDTO();
+
+        BeanUtils.copyProperties(categoria, categoriaDTO);
+
+        return categoriaDTO;
     }
 }

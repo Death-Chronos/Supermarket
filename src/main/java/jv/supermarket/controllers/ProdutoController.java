@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jv.supermarket.DTOs.ProdutoDTO;
 import jv.supermarket.entities.Produto;
 import jv.supermarket.exceptions.ResourceNotFoundException;
 import jv.supermarket.services.ProdutoService;
@@ -71,8 +72,8 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.OK).body(produtos);
     }
     @GetMapping("/by-categoria-nome")
-    public ResponseEntity<List<Produto>> getProdutosByCategoriaNome(@RequestParam String nome) {
-        List<Produto> produtos = produtoService.getProdutosByCategoriaNome(nome);
+    public ResponseEntity<List<ProdutoDTO>> getProdutosByCategoriaNome(@RequestParam String nome) {
+        List<ProdutoDTO> produtos = produtoService.getProdutosByCategoriaNome(nome);
         if (produtos.isEmpty()) {
             throw new ResourceNotFoundException("Nenhum produto foi encontrado com a Categoria: " + nome);
         }
