@@ -1,11 +1,17 @@
 package jv.supermarket.entities;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 
 @Entity
 public class Produto {
@@ -20,6 +26,10 @@ public class Produto {
     private int estoque;
     private String descricao;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "produto_categoria", joinColumns = @JoinColumn(name = "produto_id"), inverseJoinColumns = @JoinColumn(name = "categoria_id"))
+    private Set<Categoria> categorias;
+
     public Produto() {
     }
 
@@ -29,6 +39,27 @@ public class Produto {
         this.preco = preco;
         this.estoque = estoque;
         this.descricao = descricao;
+        this.categorias = new HashSet<>();
+    }
+
+    
+
+    public Produto(String nome, String marca, BigDecimal preco, int estoque, String descricao,
+            HashSet<Categoria> categorias) {
+        this.nome = nome;
+        this.marca = marca;
+        this.preco = preco;
+        this.estoque = estoque;
+        this.descricao = descricao;
+        this.categorias = categorias;
+    }
+
+    public void addCategoria(Categoria categoria) {
+        this.categorias.add(categoria);
+        categoria.getProdutos().add(this);
+    }
+    public Set<Categoria> getCategorias() {
+        return this.categorias;
     }
 
     public Long getId() {
@@ -78,5 +109,44 @@ public class Produto {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((nome == null) ? 0 : nome.hashCode());
+        result = prime * result + ((marca == null) ? 0 : marca.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Produto other = (Produto) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (nome == null) {
+            if (other.nome != null)
+                return false;
+        } else if (!nome.equals(other.nome))
+            return false;
+        if (marca == null) {
+            if (other.marca != null)
+                return false;
+        } else if (!marca.equals(other.marca))
+            return false;
+        return true;
+    }
+
+    
 
 }

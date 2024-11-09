@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import jv.supermarket.entities.Produto;
 import jv.supermarket.exceptions.AlreadyExistException;
 import jv.supermarket.exceptions.ResourceNotFoundException;
+import jv.supermarket.repositories.CategoriaRepository;
 import jv.supermarket.repositories.ProdutoRepository;
 
 @Service
@@ -16,10 +17,13 @@ public class ProdutoService {
     @Autowired
     ProdutoRepository pr;
 
+    @Autowired
+    CategoriaRepository cr;
+
     private Boolean produtoExist(String nome, String marca) {
         return pr.existsByNomeAndMarca(nome, marca);
     }
-    
+
     public List<Produto> getAllProdutos() {
         return pr.findAll();
     }
@@ -45,6 +49,9 @@ public class ProdutoService {
             produtoSalvo.setPreco(produto.getPreco());
             produtoSalvo.setEstoque(produto.getEstoque());
             produtoSalvo.setDescricao(produto.getDescricao());
+
+            produtoSalvo.getCategorias().clear();
+            produtoSalvo.getCategorias().addAll(produto.getCategorias());
 
             return pr.save(produtoSalvo);
         }
@@ -72,15 +79,27 @@ public class ProdutoService {
     }
 
     public List<Produto> getProdutosByNome(String nome) {
-       return pr.findProdutoByNome(nome);
+        return pr.findByNome(nome);
     }
 
     public List<Produto> getProdutosByMarca(String marca) {
-        return pr.findProdutoByMarca(marca);
+        return pr.findByMarca(marca);
     }
 
-    public List<Produto> getProdutosByMarcaAndNome(String marca, String nome){
-        return pr.findProdutoByMarcaAndNome(marca, nome);
+    public List<Produto> getProdutosByMarcaAndNome(String marca, String nome) {
+        return pr.findByMarcaAndNome(marca, nome);
+    }
+
+    public List<Produto> getProdutosByCategoriaNome(String nome) {
+        if (cr.existsByNome(nome)) {
+            List<Produto> produtos = pr.findByCategoriaNome(nome);
+            if (produtos.isEmpty()) {
+                throw new ResourceNotFoundException("Não existem produtos pertencentes a categoria com o nome:" + nome);
+            }
+            return produtos;
+        }
+        throw new ResourceNotFoundException("A categoria com o nome: " + nome + " não foi encontrada");
+
     }
 
 }

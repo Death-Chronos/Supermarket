@@ -70,6 +70,14 @@ public class ProdutoController {
         }
         return ResponseEntity.status(HttpStatus.OK).body(produtos);
     }
+    @GetMapping("/by-categoria-nome")
+    public ResponseEntity<List<Produto>> getProdutosByCategoriaNome(@RequestParam String nome) {
+        List<Produto> produtos = produtoService.getProdutosByCategoriaNome(nome);
+        if (produtos.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhum produto foi encontrado com a Categoria: " + nome);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(produtos);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Produto> updateProduto(@PathVariable Long id, @RequestBody Produto produto) {
