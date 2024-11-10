@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jv.supermarket.DTOs.ProdutoDTO;
-import jv.supermarket.entities.Categoria;
 import jv.supermarket.entities.Produto;
 import jv.supermarket.exceptions.AlreadyExistException;
 import jv.supermarket.exceptions.ResourceNotFoundException;

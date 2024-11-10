@@ -1,12 +1,15 @@
 package jv.supermarket.DTOs;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProdutoDTO {
     private String nome;
     private String marca;
     private BigDecimal preco;
     private String descricao;
+    private List<ImagemDTO> imagens;
 
     public ProdutoDTO() {
     }
@@ -16,6 +19,7 @@ public class ProdutoDTO {
         this.marca = marca;
         this.preco = preco;
         this.descricao = descricao;
+        this.imagens = new ArrayList<>();
     }
 
     public String getNome() {
@@ -48,6 +52,17 @@ public class ProdutoDTO {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public List<ImagemDTO> getImagens() {
+        return imagens;
+    }
+
+    public void addImagemDTO(ImagemDTO dto){
+        if(this.imagens == null){
+            imagens = new ArrayList<>();
+        }
+        imagens.add(dto);
     }
 
     

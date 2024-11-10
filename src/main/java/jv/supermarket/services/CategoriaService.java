@@ -2,13 +2,9 @@ package jv.supermarket.services;
 
 import java.util.List;
 
-import org.hibernate.Hibernate;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
-import jv.supermarket.DTOs.CategoriaDTO;
 import jv.supermarket.entities.Categoria;
 import jv.supermarket.entities.Produto;
 import jv.supermarket.exceptions.AlreadyExistException;
@@ -46,24 +42,21 @@ public class CategoriaService {
         return cr.findAll();
     }
 
-    
     public void deleteCategoriaById(Long id) {
         if (cr.existsById(id)) {
             Categoria categoria = cr.findById(id).get();
 
-            Hibernate.initialize(categoria.getProdutos());
-
             for (Produto produto : categoria.getProdutos()) {
-                produto.getCategorias().remove(categoria);
+                produto.getCategorias().remove(categoria); // Remove a categoria de cada produto
+                categoria.getProdutos().remove(produto); // Remove cada produto da categoria
             }
 
-            categoria.getProdutos().clear();
             cr.save(categoria);
             cr.deleteById(id);
-        }else{
+        } else {
             throw new ResourceNotFoundException("A categoria com o id: " + id + " não foi encontrada");
         }
-        
+
     }
 
     public Categoria updateCategoria(Long id, Categoria categoriaAtualizada) {
@@ -73,15 +66,8 @@ public class CategoriaService {
         if (!(categoriaAtualizada.getProdutos() == null)) {
             categoria.getProdutos().addAll(categoriaAtualizada.getProdutos());
         }
-        
+
         return cr.save(categoria);
     }
 
-    private CategoriaDTO converterParaDTO(Categoria categoria){
-        CategoriaDTO categoriaDTO = new CategoriaDTO();
-
-        BeanUtils.copyProperties(categoria, categoriaDTO);
-
-        return categoriaDTO;
-    }
 }
