@@ -6,7 +6,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import jv.supermarket.DTOs.ProdutoDTO;
+import jv.supermarket.entities.Categoria;
 import jv.supermarket.entities.Produto;
 import jv.supermarket.exceptions.AlreadyExistException;
 import jv.supermarket.exceptions.ResourceNotFoundException;
@@ -30,11 +32,25 @@ public class ProdutoService {
         return pr.findAll();
     }
 
-    public Produto saveProduto(Produto produto) {
+    @Transactional
+    public Produto saveProduto(Produto produto, List<String> categoriaNomes) {
         if (produtoExist(produto.getNome(), produto.getMarca())) {
             throw new AlreadyExistException("Já existe um produto com este nome e marca.");
         }
+        produto = addProdutoCategorias(categoriaNomes, produto);
         return pr.save(produto);
+    }
+
+    public Produto addProdutoCategorias(List<String> categoriasNomes, Produto produto) {
+        for (String categoriaNome : categoriasNomes) {
+            if (cr.existsByNome(categoriaNome)) {
+                Categoria categoria = cr.findByNome(categoriaNome);
+                produto.getCategorias().add(categoria);
+            } else {
+                throw new ResourceNotFoundException("A categoria com o nome: " + categoriaNome + " não foi encontrada");
+            }
+        }
+        return produto;
     }
 
     public Produto getProdutoById(Long id) {
@@ -110,6 +126,10 @@ public class ProdutoService {
         BeanUtils.copyProperties(produto, produtoDTO);
 
         return produtoDTO;
+    }
+
+    public boolean existById(Long produtoId) {
+        return pr.existsById(produtoId);
     }
 
 }

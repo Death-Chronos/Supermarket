@@ -32,7 +32,7 @@ public class Produto {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "produto_categoria", joinColumns = @JoinColumn(name = "produto_id"), inverseJoinColumns = @JoinColumn(name = "categoria_id"))
-    private Set<Categoria> categorias;
+    private Set<Categoria> categorias = new HashSet<>();
 
     @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Imagem> imagens;
@@ -46,20 +46,7 @@ public class Produto {
         this.preco = preco;
         this.estoque = estoque;
         this.descricao = descricao;
-        this.categorias = new HashSet<>();
         this.imagens = new ArrayList<>();
-    }
-
-    
-
-    public Produto(String nome, String marca, BigDecimal preco, int estoque, String descricao,
-            HashSet<Categoria> categorias) {
-        this.nome = nome;
-        this.marca = marca;
-        this.preco = preco;
-        this.estoque = estoque;
-        this.descricao = descricao;
-        this.categorias = categorias;
     }
 
     public void addCategoria(Categoria categoria) {

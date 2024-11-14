@@ -1,6 +1,8 @@
 package jv.supermarket.config;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -39,31 +41,16 @@ public class InicializadorBD implements CommandLineRunner {
 
         // Criação e associação de Produtos
         Produto p1 = new Produto("Smartphone", "Samsung", new BigDecimal(3000), 20, "O melhor da Samsung");
-        ps.saveProduto(p1);
-
-        p1.addCategoria(c3);
-        p1.addCategoria(c1);
-        ps.updateProduto(p1, p1.getId()); // Atualiza produto com categorias
+        ps.saveProduto(p1, Arrays.asList("Eletrônicos","Smartphones"));
 
         Produto p2 = new Produto("Smartphone", "Xiaomi", new BigDecimal(3200), 32, "O mundo todo no seu bolso");
-        ps.saveProduto(p2);
-
-        p2.addCategoria(c3);
-        p2.addCategoria(c1);
-        ps.updateProduto(p2, p2.getId()); // Atualiza produto com categorias
+        ps.saveProduto(p2, Arrays.asList("Eletrônicos","Smartphones"));
 
         Produto p3 = new Produto("Geladeira", "Samsung", new BigDecimal(4000), 10, "Gela que é uma beleza!");
-        ps.saveProduto(p3);
-        
-        p3.addCategoria(c4);
-        p3.addCategoria(c1);
-        ps.updateProduto(p3, p3.getId()); // Atualiza produto com categorias
+        ps.saveProduto(p3, Arrays.asList("Eletrônicos","Cozinha"));
 
         Produto p4 = new Produto("Cama de Casal", "Plumatex", new BigDecimal(1500), 5, "O que há de conforto para você");
-        ps.saveProduto(p4);
-        
-        p4.addCategoria(c2);
-        ps.updateProduto(p4, p4.getId()); // Atualiza produto com categorias
+        ps.saveProduto(p4, Arrays.asList("Mobília"));
         
         
     }

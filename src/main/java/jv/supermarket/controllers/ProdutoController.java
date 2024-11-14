@@ -29,9 +29,9 @@ public class ProdutoController {
     private ProdutoService produtoService;
 
     @PostMapping("/save")
-    public ResponseEntity<Produto> saveProduto(@RequestBody Produto produto) {
+    public ResponseEntity<Produto> saveProduto(@RequestBody Produto produto, @RequestParam List<String> categorias) {
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(produtoService.saveProduto(produto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(produtoService.saveProduto(produto,categorias));
 
     }
 
