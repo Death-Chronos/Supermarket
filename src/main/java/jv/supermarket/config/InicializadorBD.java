@@ -1,6 +1,5 @@
 package jv.supermarket.config;
 
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
@@ -9,8 +8,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import jv.supermarket.entities.Carrinho;
 import jv.supermarket.entities.Categoria;
 import jv.supermarket.entities.Produto;
+import jv.supermarket.services.CarrinhoItemService;
+import jv.supermarket.services.CarrinhoService;
 import jv.supermarket.services.CategoriaService;
 import jv.supermarket.services.ProdutoService;
 
@@ -23,6 +25,12 @@ public class InicializadorBD implements CommandLineRunner {
 
     @Autowired
     CategoriaService cs;
+
+    @Autowired
+    CarrinhoItemService itemService;
+
+    @Autowired
+    CarrinhoService carrinhoService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -51,7 +59,14 @@ public class InicializadorBD implements CommandLineRunner {
 
         Produto p4 = new Produto("Cama de Casal", "Plumatex", new BigDecimal(1500), 5, "O que há de conforto para você");
         ps.saveProduto(p4, Arrays.asList("Mobília"));
+
+
+        Carrinho carrinho = carrinhoService.criarCarrinho();
         
+        itemService.adicionarItemNoCarrinho(p1.getId(), 2, carrinho.getId());        
+        itemService.adicionarItemNoCarrinho(p4.getId(), 1, carrinho.getId());
+        itemService.removerItemDoCarrinho(carrinho.getId(), p4.getId());
+        itemService.updateItemQuantidade(carrinho.getId(), p1.getId(), 3);        
         
     }
 

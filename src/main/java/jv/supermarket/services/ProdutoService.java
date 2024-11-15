@@ -37,11 +37,11 @@ public class ProdutoService {
         if (produtoExist(produto.getNome(), produto.getMarca())) {
             throw new AlreadyExistException("Já existe um produto com este nome e marca.");
         }
-        produto = addProdutoCategorias(categoriaNomes, produto);
+        produto = addCategoriasEmProduto(categoriaNomes, produto);
         return pr.save(produto);
     }
 
-    public Produto addProdutoCategorias(List<String> categoriasNomes, Produto produto) {
+    public Produto addCategoriasEmProduto(List<String> categoriasNomes, Produto produto) {
         for (String categoriaNome : categoriasNomes) {
             if (cr.existsByNome(categoriaNome)) {
                 Categoria categoria = cr.findByNome(categoriaNome);
@@ -120,7 +120,7 @@ public class ProdutoService {
 
     }
 
-    private ProdutoDTO converterParaDTO(Produto produto) {
+    public ProdutoDTO converterParaDTO(Produto produto) {
         ProdutoDTO produtoDTO = new ProdutoDTO();
 
         BeanUtils.copyProperties(produto, produtoDTO);
