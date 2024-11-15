@@ -1,5 +1,6 @@
 package jv.supermarket.controllers;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jv.supermarket.config.RespostaAPI;
 import jv.supermarket.entities.Categoria;
 import jv.supermarket.services.CategoriaService;
 
@@ -47,9 +49,9 @@ public class CategoriaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCategoria(@PathVariable Long id) {
+    public ResponseEntity<RespostaAPI> deleteCategoria(@PathVariable Long id) {
         cs.deleteCategoriaById(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Categoria deletada com sucess.");
+        return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),"Categoria deletada com sucess."));
     }
 
     @PutMapping("/{id}")

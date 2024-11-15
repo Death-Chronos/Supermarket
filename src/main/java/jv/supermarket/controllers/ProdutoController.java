@@ -1,5 +1,6 @@
 package jv.supermarket.controllers;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jv.supermarket.DTOs.ProdutoDTO;
+import jv.supermarket.config.RespostaAPI;
 import jv.supermarket.entities.Produto;
 import jv.supermarket.exceptions.ResourceNotFoundException;
 import jv.supermarket.services.ProdutoService;
@@ -36,8 +38,8 @@ public class ProdutoController {
     }
 
     @GetMapping("/{id}")
-    public Produto getProdutoById(@PathVariable Long id) {
-        return produtoService.getProdutoById(id);
+    public ResponseEntity<Produto> getProdutoById(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(produtoService.getProdutoById(id));
     }
 
     @GetMapping("/all")
@@ -87,10 +89,10 @@ public class ProdutoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProduto(@PathVariable Long id) {
+    public ResponseEntity<RespostaAPI> deleteProduto(@PathVariable Long id) {
         produtoService.deleteProdutoById(id);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Produto deletado com sucesso");
+        return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),"Produto deletado com sucesso"));
     }
     @GetMapping("/{id}/addEstoque")
     public ResponseEntity<Produto> aumentarEstoque(@PathVariable Long id, @RequestParam int quantidade) {

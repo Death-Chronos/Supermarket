@@ -1,6 +1,7 @@
 package jv.supermarket.controllers;
 
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import jv.supermarket.DTOs.ImagemDTO;
+import jv.supermarket.config.RespostaAPI;
 import jv.supermarket.entities.Imagem;
 import jv.supermarket.services.ImagemService;
 
@@ -62,9 +64,9 @@ public class ImagemController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteImage(@PathVariable Long id){
+    public ResponseEntity<RespostaAPI> deleteImage(@PathVariable Long id){
         is.deleteImage(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Imagem deletada com sucesso");
+        return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),"Imagem deletada com sucesso"));
     }
 
 }
