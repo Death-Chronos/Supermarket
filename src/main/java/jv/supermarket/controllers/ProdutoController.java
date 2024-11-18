@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import jv.supermarket.DTOs.ProdutoDTO;
 import jv.supermarket.config.RespostaAPI;
 import jv.supermarket.entities.Produto;
@@ -31,7 +32,7 @@ public class ProdutoController {
     private ProdutoService produtoService;
 
     @PostMapping("/save")
-    public ResponseEntity<Produto> saveProduto(@RequestBody Produto produto, @RequestParam List<String> categorias) {
+    public ResponseEntity<Produto> saveProduto(@RequestBody @Valid Produto produto, @RequestParam List<String> categorias) {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(produtoService.saveProduto(produto,categorias));
 

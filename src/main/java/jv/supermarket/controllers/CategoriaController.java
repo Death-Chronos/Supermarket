@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import jv.supermarket.config.RespostaAPI;
 import jv.supermarket.entities.Categoria;
 import jv.supermarket.services.CategoriaService;
@@ -28,7 +29,7 @@ public class CategoriaController {
     CategoriaService cs;
 
     @PostMapping("/save")
-    public ResponseEntity<Categoria> saveCategoria(@RequestBody Categoria categoria) {
+    public ResponseEntity<Categoria> saveCategoria(@RequestBody  @Valid Categoria categoria) {
         return ResponseEntity.status(HttpStatus.CREATED).body(cs.saveCategoria(categoria));
 
     }

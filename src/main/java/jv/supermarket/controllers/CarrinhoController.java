@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jv.supermarket.DTOs.CarrinhoDTO;
 import jv.supermarket.config.RespostaAPI;
-import jv.supermarket.entities.Carrinho;
 import jv.supermarket.services.CarrinhoItemService;
 import jv.supermarket.services.CarrinhoService;
 
@@ -30,34 +29,30 @@ public class CarrinhoController {
     @Autowired
     CarrinhoItemService ItemService;
     
-    @GetMapping("/criar")
-    public ResponseEntity<Carrinho> criarCarrinho(){
-        return ResponseEntity.status(HttpStatus.OK).body(carrinhoService.criarCarrinho());
-    }
     @GetMapping("/{id}")
     public ResponseEntity<CarrinhoDTO> mostrarCarrinho(@PathVariable Long id){
         return ResponseEntity.status(HttpStatus.OK).body(carrinhoService.getCarrinho(id));
     }
 
-    @PostMapping("/{carrinhoId}/adicionarItem/{itemId}")
+    @PostMapping("/{carrinhoId}/addItem/{itemId}")
     public ResponseEntity<RespostaAPI> adicionarItem(@PathVariable Long carrinhoId, @PathVariable Long itemId, @RequestParam int quantidade) {
         ItemService.adicionarItemNoCarrinho(itemId, quantidade, carrinhoId);
         return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),"Item de id: "+itemId +" adicionado no carrinho com id: "+carrinhoId+" com sucesso."));
     }
     
-    @DeleteMapping("/{carrinhoId}/removerItem/{itemId}")
+    @DeleteMapping("/{carrinhoId}/removeItem/{itemId}")
     public ResponseEntity<RespostaAPI> removerItem(@PathVariable Long carrinhoId, @PathVariable Long itemId) {
         ItemService.removerItemDoCarrinho(carrinhoId, itemId);
         return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),"Item de id: "+itemId +" removido do carrinho com id: "+carrinhoId+" com sucesso."));
     }
 
-    @PutMapping("/{carrinhoId}/item/{itemId}/atualizar")
+    @PutMapping("/{carrinhoId}/item/{itemId}/update")
     public ResponseEntity<RespostaAPI> updateItemQuantidade(@PathVariable Long carrinhoId, @PathVariable Long itemId, @RequestParam int quantidade) {
         ItemService.updateItemQuantidade(itemId, carrinhoId, quantidade);
         return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),"Item de id: "+itemId +" modificado no carrinho com id: "+carrinhoId+" com sucesso."));
     }
 
-    @DeleteMapping("/{carrinhoId}/limpar")
+    @DeleteMapping("/{carrinhoId}/clear")
     public ResponseEntity<RespostaAPI> limparCarrinho(@PathVariable Long carrinhoId) {
         carrinhoService.limparCarrinho(carrinhoId);
         return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),"Carrinho com id: "+carrinhoId +" limpo com sucesso."));

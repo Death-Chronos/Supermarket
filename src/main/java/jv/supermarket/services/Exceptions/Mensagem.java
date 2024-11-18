@@ -2,6 +2,7 @@ package jv.supermarket.services.Exceptions;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -13,16 +14,17 @@ public class Mensagem implements Serializable {
     private Integer status;
     private String error;
     private String path;
+    private List<String> mensages;
 
     public Mensagem() {
     }
 
-    public Mensagem(Instant timestamp, Integer status, String error, String path) {
-        super();
+    public Mensagem(Instant timestamp, Integer status, String error, String path, List<String> mensages) {
         this.timestamp = timestamp;
         this.status = status;
         this.error = error;
         this.path = path;
+        this.mensages = mensages;
     }
 
     public Instant getTimestamp() {
@@ -47,6 +49,14 @@ public class Mensagem implements Serializable {
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    public List<String> getMensages() {
+        return mensages;
+    }
+
+    public void setMensages(List<String> mensages) {
+        this.mensages = mensages;
     }
 
     public String getPath() {

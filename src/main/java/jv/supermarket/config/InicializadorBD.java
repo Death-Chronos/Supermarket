@@ -11,26 +11,31 @@ import org.springframework.context.annotation.Profile;
 import jv.supermarket.entities.Carrinho;
 import jv.supermarket.entities.Categoria;
 import jv.supermarket.entities.Produto;
+import jv.supermarket.entities.Usuario;
 import jv.supermarket.services.CarrinhoItemService;
 import jv.supermarket.services.CarrinhoService;
 import jv.supermarket.services.CategoriaService;
 import jv.supermarket.services.ProdutoService;
+import jv.supermarket.services.UsuarioService;
 
 @Configuration
 @Profile("test")
 public class InicializadorBD implements CommandLineRunner {
 
     @Autowired
-    ProdutoService ps;
+    private ProdutoService produtoService;
 
     @Autowired
-    CategoriaService cs;
+    private CategoriaService categoriaService;
 
     @Autowired
-    CarrinhoItemService itemService;
+    private CarrinhoItemService itemService;
 
     @Autowired
-    CarrinhoService carrinhoService;
+    private CarrinhoService carrinhoService;
+
+    @Autowired
+    private UsuarioService userService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -42,26 +47,29 @@ public class InicializadorBD implements CommandLineRunner {
         Categoria c4 = new Categoria("Cozinha");
 
         // Salva Categorias
-        cs.saveCategoria(c4);
-        cs.saveCategoria(c3);
-        cs.saveCategoria(c2);
-        cs.saveCategoria(c1);
+        categoriaService.saveCategoria(c4);
+        categoriaService.saveCategoria(c3);
+        categoriaService.saveCategoria(c2);
+        categoriaService.saveCategoria(c1);
 
         // Criação e associação de Produtos
         Produto p1 = new Produto("Smartphone", "Samsung", new BigDecimal(3000), 20, "O melhor da Samsung");
-        ps.saveProduto(p1, Arrays.asList("Eletrônicos","Smartphones"));
+        produtoService.saveProduto(p1, Arrays.asList("Eletrônicos","Smartphones"));
 
         Produto p2 = new Produto("Smartphone", "Xiaomi", new BigDecimal(3200), 32, "O mundo todo no seu bolso");
-        ps.saveProduto(p2, Arrays.asList("Eletrônicos","Smartphones"));
+        produtoService.saveProduto(p2, Arrays.asList("Eletrônicos","Smartphones"));
 
         Produto p3 = new Produto("Geladeira", "Samsung", new BigDecimal(4000), 10, "Gela que é uma beleza!");
-        ps.saveProduto(p3, Arrays.asList("Eletrônicos","Cozinha"));
+        produtoService.saveProduto(p3, Arrays.asList("Eletrônicos","Cozinha"));
 
         Produto p4 = new Produto("Cama de Casal", "Plumatex", new BigDecimal(1500), 5, "O que há de conforto para você");
-        ps.saveProduto(p4, Arrays.asList("Mobília"));
+        produtoService.saveProduto(p4, Arrays.asList("Mobília"));
 
+        Usuario user = new Usuario("Adm", "adm@gmail.com", "123456");
 
-        Carrinho carrinho = carrinhoService.criarCarrinho();
+        user = userService.saveUsuario(user);
+
+        Carrinho carrinho = carrinhoService.getById(user.getId());
         
         itemService.adicionarItemNoCarrinho(p1.getId(), 2, carrinho.getId());        
         itemService.adicionarItemNoCarrinho(p4.getId(), 1, carrinho.getId());

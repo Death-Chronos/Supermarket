@@ -25,11 +25,6 @@ public class CarrinhoService {
     @Autowired
     private ProdutoService produtoService;
 
-    public Carrinho criarCarrinho() {
-        Carrinho carrinho = new Carrinho();
-        return carrinhoRepo.save(carrinho);
-    }
-
     public Carrinho saveCarrinho(Carrinho carrinho) {
         return carrinhoRepo.save(carrinho);
     }

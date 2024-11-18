@@ -4,19 +4,27 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class Carrinho {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
+
+    @JsonIgnore
+    @OneToOne
+    @MapsId
+    @JoinColumn(name="user_id")
+    private Usuario user;
 
     @OneToMany(mappedBy = "carrinho", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CarrinhoItem> items = new HashSet<CarrinhoItem>();
@@ -47,6 +55,13 @@ public class Carrinho {
         return this.items.stream().map(CarrinhoItem::getPrecoTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    public Usuario getUser() {
+        return user;
+    }
+
+    public void setUser(Usuario user) {
+        this.user = user;
+    }
 
     public void limparCarrinho(){
         this.items.clear();

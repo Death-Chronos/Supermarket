@@ -16,6 +16,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Produto {
@@ -23,11 +26,16 @@ public class Produto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @NotBlank(message = "O nome do produto deve ser informado")
     private String nome;
+    @NotBlank(message = "A marca do produto deve ser informada")
     private String marca;
+    @NotNull(message = "O preço do produto deve ser informado")
     private BigDecimal preco;
+    @NotNull(message = "A quantidade em estoque do produto deve ser informado")
+    @Min(value = 0, message = "Valores menores que zero não podem ser salvos")
     private int estoque;
+    @NotNull
     private String descricao;
 
     @ManyToMany(fetch = FetchType.EAGER)
