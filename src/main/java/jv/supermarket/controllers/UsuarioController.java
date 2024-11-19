@@ -37,7 +37,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/{userId}/update")
-    public ResponseEntity<Usuario> updateUsuario(Usuario user, @PathVariable Long userId){
+    public ResponseEntity<Usuario> updateUsuario(@RequestBody @Valid Usuario user, @PathVariable Long userId){
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUsuario(user, userId));
     }
 
