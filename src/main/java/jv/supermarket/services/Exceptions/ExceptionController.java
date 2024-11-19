@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import jakarta.servlet.http.HttpServletRequest;
 import jv.supermarket.exceptions.AlreadyExistException;
 import jv.supermarket.exceptions.ImageSavingException;
+import jv.supermarket.exceptions.OutOfStockException;
 import jv.supermarket.exceptions.ResourceNotFoundException;
 
 @RestControllerAdvice
@@ -63,6 +64,16 @@ public class ExceptionController {
         }
 
         Mensagem mensagem = new Mensagem(Instant.now(), status.value(), erro,request.getRequestURI(), detalhes);
+        return ResponseEntity.status(status).body(mensagem);
+    }
+
+    @ExceptionHandler(OutOfStockException.class)
+    public ResponseEntity<Mensagem> estoqueInsuficiente(OutOfStockException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        String erro = "Estoque insuficiente";
+        ArrayList<String> detalhes = new ArrayList<String>();
+        detalhes.add(e.getMessage());
+        Mensagem mensagem = new Mensagem(Instant.now(), status.value(), erro, request.getRequestURI(), detalhes);
         return ResponseEntity.status(status).body(mensagem);
     }
 }

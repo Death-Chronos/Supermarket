@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import jv.supermarket.entities.Carrinho;
 import jv.supermarket.entities.CarrinhoItem;
 import jv.supermarket.entities.Produto;
+import jv.supermarket.exceptions.OutOfStockException;
 import jv.supermarket.exceptions.ResourceNotFoundException;
 import jv.supermarket.repositories.CarrinhoItemRepository;
 
@@ -26,34 +27,39 @@ public class CarrinhoItemService {
     public void adicionarItemNoCarrinho(Long produtoId, int quantity, Long carrinhoId) {
         Produto produto = produtoService.getProdutoById(produtoId);
 
-        if (carrinhoService.existById(carrinhoId)) {
-            Carrinho carrinho = carrinhoService.getById(carrinhoId);
+        if (!isQuantidadePermitida(quantity, produto.getEstoque())) {
+            throw new OutOfStockException("O estoque do produto é insuficiente para a quantidade requisitada");
+        }
 
-            CarrinhoItem carrinhoItem = carrinho.getItems().stream()
-                    .filter(item -> item.getProduto().getId().equals(produtoId))
-                    .findFirst().orElse(new CarrinhoItem());
-
-            if (carrinhoItem.getId() == null) {
-                carrinhoItem.setCarrinho(carrinho);
-                carrinhoItem.setProduto(produto);
-                carrinhoItem.setQuantidade(quantity);
-
-                carrinhoItem.setCarrinho(carrinho);
-
-                carrinhoItemRepository.save(carrinhoItem);
-
-                carrinho.adicionarItem(carrinhoItem);
-
-                carrinhoService.saveCarrinho(carrinho);
-            } else {
-                carrinhoItem.setQuantidade(carrinhoItem.getQuantidade() + quantity);
-                carrinhoItemRepository.save(carrinhoItem);
-            }
-
-        } else {
+        if (!carrinhoService.existById(carrinhoId)) {
             throw new ResourceNotFoundException("Carrinho não encontrado com o id: " + carrinhoId);
         }
 
+        Carrinho carrinho = carrinhoService.getById(carrinhoId);
+        CarrinhoItem carrinhoItem = carrinho.getItems().stream()
+                .filter(item -> item.getProduto().getId().equals(produtoId))
+                .findFirst()
+                .orElseGet(() -> criarNovoCarrinhoItem(carrinho, produto, quantity));
+
+        if (carrinhoItem.getId() == null) {
+            salvarNovoCarrinhoItem(carrinho, carrinhoItem);
+        } else {
+            updateItemQuantidade(carrinhoId, produtoId, quantity);
+        }
+    }
+
+    private CarrinhoItem criarNovoCarrinhoItem(Carrinho carrinho, Produto produto, int quantity) {
+        CarrinhoItem novoItem = new CarrinhoItem();
+        novoItem.setCarrinho(carrinho);
+        novoItem.setProduto(produto);
+        novoItem.setQuantidade(quantity);
+        return novoItem;
+    }
+
+    private void salvarNovoCarrinhoItem(Carrinho carrinho, CarrinhoItem carrinhoItem) {
+        carrinhoItemRepository.save(carrinhoItem);
+        carrinho.adicionarItem(carrinhoItem);
+        carrinhoService.saveCarrinho(carrinho);
     }
 
     @Transactional
@@ -69,9 +75,16 @@ public class CarrinhoItemService {
 
     @Transactional
     public void updateItemQuantidade(Long carrinhoId, Long produtoId, int quantidade) {
-            CarrinhoItem item = getCarrinhoItem(carrinhoId, produtoId);
-            item.setQuantidade(quantidade);
-            carrinhoItemRepository.save(item);
+        CarrinhoItem item = getCarrinhoItem(carrinhoId, produtoId);
+
+        int estoqueAtual = produtoService.getProdutoById(produtoId).getEstoque();
+
+        if (!isQuantidadePermitida(quantidade, estoqueAtual)) {
+            throw new OutOfStockException("O estoque do produto é insuficiente para a quantidade requisitada");
+        }
+        
+        item.setQuantidade(quantidade);
+        carrinhoItemRepository.save(item);
 
     }
 
@@ -84,6 +97,8 @@ public class CarrinhoItemService {
                         "Não existe nenhum produto com Id: " + produtoId + " No carrinho com Id: " + carrinhoId));
     }
 
-    
+    private boolean isQuantidadePermitida(int quantidade, int produtoEstoque) {
+        return quantidade <= produtoEstoque;
+    }
 
 }
