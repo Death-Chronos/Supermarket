@@ -34,9 +34,12 @@ public class CarrinhoItemService {
         if (!carrinhoService.existById(carrinhoId)) {
             throw new ResourceNotFoundException("Carrinho não encontrado com o id: " + carrinhoId);
         }
+        if (quantity <1) {
+            throw new IllegalArgumentException("A quantidade do item deve ser maior que 0");
+        }
 
         Carrinho carrinho = carrinhoService.getById(carrinhoId);
-        CarrinhoItem carrinhoItem = carrinho.getItems().stream()
+        CarrinhoItem carrinhoItem = carrinho.getItens().stream()
                 .filter(item -> item.getProduto().getId().equals(produtoId))
                 .findFirst()
                 .orElseGet(() -> criarNovoCarrinhoItem(carrinho, produto, quantity));
@@ -79,9 +82,14 @@ public class CarrinhoItemService {
 
         int estoqueAtual = produtoService.getProdutoById(produtoId).getEstoque();
 
+        if (quantidade < 1) {
+            throw new IllegalArgumentException("A quantidade do item deve ser maior que 0");
+        }
+
         if (!isQuantidadePermitida(quantidade, estoqueAtual)) {
             throw new OutOfStockException("O estoque do produto é insuficiente para a quantidade requisitada");
         }
+
         
         item.setQuantidade(quantidade);
         carrinhoItemRepository.save(item);
@@ -91,7 +99,7 @@ public class CarrinhoItemService {
     private CarrinhoItem getCarrinhoItem(Long carrinhoId, Long produtoId) {
         Carrinho carrinho = carrinhoService.getById(carrinhoId);
 
-        return carrinho.getItems().stream().filter(itens -> itens.getProduto().getId().equals(produtoId))
+        return carrinho.getItens().stream().filter(itens -> itens.getProduto().getId().equals(produtoId))
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Não existe nenhum produto com Id: " + produtoId + " No carrinho com Id: " + carrinhoId));

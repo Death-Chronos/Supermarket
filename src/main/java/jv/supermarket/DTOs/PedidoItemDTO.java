@@ -2,18 +2,16 @@ package jv.supermarket.DTOs;
 
 import java.math.BigDecimal;
 
-public class CarrinhoItemDTO {
+public class PedidoItemDTO {
 
     private ProdutoDTO produto;
-
     private int quantidade;
-
     private BigDecimal precoTotal;
 
-    public CarrinhoItemDTO() {
+    public PedidoItemDTO() {
     }
 
-    public CarrinhoItemDTO(ProdutoDTO produto, int quantidade, BigDecimal precoTotal) {
+    public PedidoItemDTO(ProdutoDTO produto, int quantidade, BigDecimal precoTotal) {
         this.produto = produto;
         this.quantidade = quantidade;
         this.precoTotal = precoTotal;

@@ -76,4 +76,14 @@ public class ExceptionController {
         Mensagem mensagem = new Mensagem(Instant.now(), status.value(), erro, request.getRequestURI(), detalhes);
         return ResponseEntity.status(status).body(mensagem);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Mensagem> argumentoInvalido(IllegalArgumentException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        String erro = "Argumento inválido";
+        ArrayList<String> detalhes = new ArrayList<String>();
+        detalhes.add(e.getMessage());
+        Mensagem mensagem = new Mensagem(Instant.now(), status.value(), erro, request.getRequestURI(), detalhes);
+        return ResponseEntity.status(status).body(mensagem);
+    }
 }

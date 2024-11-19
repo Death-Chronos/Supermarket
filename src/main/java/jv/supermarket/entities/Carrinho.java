@@ -23,11 +23,11 @@ public class Carrinho {
     @JsonIgnore
     @OneToOne
     @MapsId
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private Usuario user;
 
     @OneToMany(mappedBy = "carrinho", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<CarrinhoItem> items = new HashSet<CarrinhoItem>();
+    private Set<CarrinhoItem> itens = new HashSet<CarrinhoItem>();
 
     public Long getId() {
         return id;
@@ -37,22 +37,22 @@ public class Carrinho {
         this.id = id;
     }
 
-    public Set<CarrinhoItem> getItems() {
-        return items;
+    public Set<CarrinhoItem> getItens() {
+        return itens;
     }
 
     public void adicionarItem(CarrinhoItem item) {
-        items.add(item);
+        itens.add(item);
         item.setCarrinho(this);
     }
 
     public void removerItem(CarrinhoItem item) {
-        items.remove(item);
+        itens.remove(item);
         item.setCarrinho(null);
     }
 
     public BigDecimal getValorTotal() {
-        return this.items.stream().map(CarrinhoItem::getPrecoTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return this.itens.stream().map(CarrinhoItem::getPrecoTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public Usuario getUser() {
@@ -63,10 +63,8 @@ public class Carrinho {
         this.user = user;
     }
 
-    public void limparCarrinho(){
-        this.items.clear();
+    public void limparCarrinho() {
+        this.itens.clear();
     }
 
-
-    
 }

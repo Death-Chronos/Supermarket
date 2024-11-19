@@ -62,7 +62,7 @@ public class CarrinhoService {
     public CarrinhoDTO convertToDTO(Carrinho carrinho){
         CarrinhoDTO dto = new CarrinhoDTO();
         dto.setPrecoTotal(carrinho.getValorTotal());
-        dto.setItems(carrinho.getItems().stream()
+        dto.setItems(carrinho.getItens().stream()
                         .map(item -> convertItemToDTO(item))   
                         .collect(Collectors.toSet())
                     );

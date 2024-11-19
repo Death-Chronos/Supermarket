@@ -15,6 +15,7 @@ import jv.supermarket.entities.Usuario;
 import jv.supermarket.services.CarrinhoItemService;
 import jv.supermarket.services.CarrinhoService;
 import jv.supermarket.services.CategoriaService;
+import jv.supermarket.services.PedidoService;
 import jv.supermarket.services.ProdutoService;
 import jv.supermarket.services.UsuarioService;
 
@@ -36,6 +37,9 @@ public class InicializadorBD implements CommandLineRunner {
 
     @Autowired
     private UsuarioService userService;
+
+    @Autowired
+    private PedidoService pedidoService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -74,7 +78,9 @@ public class InicializadorBD implements CommandLineRunner {
         itemService.adicionarItemNoCarrinho(p1.getId(), 2, carrinho.getId());        
         itemService.adicionarItemNoCarrinho(p4.getId(), 1, carrinho.getId());
         itemService.removerItemDoCarrinho(carrinho.getId(), p4.getId());
-        itemService.updateItemQuantidade(carrinho.getId(), p1.getId(), 3);        
+        itemService.updateItemQuantidade(carrinho.getId(), p1.getId(), 3);
+        
+        pedidoService.createPedido(user.getId());
         
     }
 

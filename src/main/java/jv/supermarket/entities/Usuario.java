@@ -1,5 +1,8 @@
 package jv.supermarket.entities;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -7,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.validation.constraints.Email;
@@ -31,6 +35,9 @@ public class Usuario {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     @PrimaryKeyJoinColumn
     private Carrinho carrinho;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<Pedido> pedidos = new HashSet<Pedido>();
 
     public Usuario(String nome, String email, String password, Carrinho carrinho) {
         this.nome = nome;
