@@ -56,7 +56,7 @@ public class CategoriaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Categoria> updateCategoria(@PathVariable Long id, @RequestBody Categoria categoriaAtualizada) {
+    public ResponseEntity<Categoria> updateCategoria(@PathVariable Long id, @RequestBody @Valid Categoria categoriaAtualizada) {
         return ResponseEntity.status(HttpStatus.OK).body(cs.updateCategoria(id, categoriaAtualizada));
     }
 
