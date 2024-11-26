@@ -11,7 +11,9 @@ import org.springframework.context.annotation.Profile;
 import jv.supermarket.entities.Carrinho;
 import jv.supermarket.entities.Categoria;
 import jv.supermarket.entities.Produto;
+import jv.supermarket.entities.Role;
 import jv.supermarket.entities.Usuario;
+import jv.supermarket.repositories.RoleRepository;
 import jv.supermarket.services.CarrinhoItemService;
 import jv.supermarket.services.CarrinhoService;
 import jv.supermarket.services.CategoriaService;
@@ -41,8 +43,30 @@ public class InicializadorBD implements CommandLineRunner {
     @Autowired
     private PedidoService pedidoService;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
     @Override
     public void run(String... args) throws Exception {
+
+        //Se usar Role ou AnyRole na config de segurança, deve ter o ROLE_ antes do nome da role
+        Role role = new Role();
+        role.setNome("ROLE_ADMIN");
+        roleRepository.save(role);
+
+        Role role2 = new Role();
+        role2.setNome("ROLE_FUNCIONARIO");
+        roleRepository.save(role2);
+
+        Role role3 = new Role();
+        role3.setNome("ROLE_CLIENTE");
+        roleRepository.save(role3);
+
+
+        Usuario user = new Usuario("Adm", "adm@gmail.com", "123456");
+        user.getRoles().add(role);
+
+        user = userService.saveUsuario(user);
 
         // Criação de Categorias
         Categoria c1 = new Categoria("Eletrônicos");
@@ -68,10 +92,6 @@ public class InicializadorBD implements CommandLineRunner {
 
         Produto p4 = new Produto("Cama de Casal", "Plumatex", new BigDecimal(1500), 5, "O que há de conforto para você");
         produtoService.saveProduto(p4, Arrays.asList("Mobília"));
-
-        Usuario user = new Usuario("Adm", "adm@gmail.com", "123456");
-
-        user = userService.saveUsuario(user);
 
         Carrinho carrinho = carrinhoService.getById(user.getId());
         

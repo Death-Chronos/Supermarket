@@ -7,9 +7,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
@@ -30,6 +34,11 @@ public class Usuario {
     private String email;
     @NotBlank(message = "A senha deve ser informada")
     private String password;
+
+    //Não esqueça do Fetch EAGER(e de sempre olhar o console)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<Role>();
 
     @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
@@ -85,6 +94,14 @@ public class Usuario {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public Set<Pedido> getPedidos() {
+        return pedidos;
     }
 
     public Carrinho getCarrinho() {
