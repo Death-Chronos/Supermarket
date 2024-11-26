@@ -58,6 +58,7 @@ public class ProdutoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Produto com o id: " + id + " não encontrado"));
     }
 
+    @Transactional
     public Produto updateProduto(Produto produto, Long id) {
         if (pr.existsById(id)) {
             Produto produtoSalvo = getProdutoById(id);
@@ -67,9 +68,6 @@ public class ProdutoService {
             produtoSalvo.setPreco(produto.getPreco());
             produtoSalvo.setEstoque(produto.getEstoque());
             produtoSalvo.setDescricao(produto.getDescricao());
-
-            produtoSalvo.getCategorias().clear();
-            produtoSalvo.getCategorias().addAll(produto.getCategorias());
 
             return pr.save(produtoSalvo);
         }

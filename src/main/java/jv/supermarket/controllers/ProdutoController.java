@@ -95,7 +95,7 @@ public class ProdutoController {
 
         return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),"Produto deletado com sucesso"));
     }
-    @GetMapping("/{id}/addEstoque")
+    @PutMapping("/{id}/addEstoque")
     public ResponseEntity<Produto> aumentarEstoque(@PathVariable Long id, @RequestParam int quantidade) {
         return ResponseEntity.status(HttpStatus.OK).body(produtoService.addProdutoEstoque(quantidade, id));
     }
