@@ -1,5 +1,6 @@
 package jv.supermarket.security.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -7,13 +8,15 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import jv.supermarket.security.CustomUserDetailsService;
+import jv.supermarket.security.filters.FilterTokenJWT;
 
 @Configuration
 @EnableWebSecurity
@@ -39,12 +42,13 @@ public class WebSecurityConfig {
         return new ProviderManager(provider);
     }
 
+    @Autowired
+    FilterTokenJWT filterToken;
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        http.httpBasic(Customizer.withDefaults());
-
         String url_produtos = "/supermarket/produto/";
+        String url_auth = "/supermarket/auth/";
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/h2-console/**")
                     .permitAll()
@@ -55,8 +59,14 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.PUT, url_produtos + "**")
                     .hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, url_produtos + "**")
-                    .hasRole("ADMIN"));
+                    .hasRole("ADMIN")
+                .requestMatchers(url_auth+"**")
+                    .permitAll());
 
+        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        
+        http.addFilterBefore(filterToken, UsernamePasswordAuthenticationFilter.class);
+        
         http.headers(header -> header
                 .frameOptions(Customizer.withDefaults()).disable());
 

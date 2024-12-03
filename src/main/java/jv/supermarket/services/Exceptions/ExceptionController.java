@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jv.supermarket.exceptions.AlreadyExistException;
+import jv.supermarket.exceptions.BadAuthRequestException;
 import jv.supermarket.exceptions.ImageSavingException;
 import jv.supermarket.exceptions.OutOfStockException;
 import jv.supermarket.exceptions.ResourceNotFoundException;
@@ -81,6 +82,16 @@ public class ExceptionController {
     public ResponseEntity<Mensagem> argumentoInvalido(IllegalArgumentException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         String erro = "Argumento inválido";
+        ArrayList<String> detalhes = new ArrayList<String>();
+        detalhes.add(e.getMessage());
+        Mensagem mensagem = new Mensagem(Instant.now(), status.value(), erro, request.getRequestURI(), detalhes);
+        return ResponseEntity.status(status).body(mensagem);
+    }
+    
+    @ExceptionHandler(BadAuthRequestException.class)
+    public ResponseEntity<Mensagem> erroLogin(IllegalArgumentException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        String erro = "Erro com autenticação";
         ArrayList<String> detalhes = new ArrayList<String>();
         detalhes.add(e.getMessage());
         Mensagem mensagem = new Mensagem(Instant.now(), status.value(), erro, request.getRequestURI(), detalhes);

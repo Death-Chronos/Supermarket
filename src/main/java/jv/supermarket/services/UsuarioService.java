@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import jv.supermarket.entities.Carrinho;
+import jv.supermarket.entities.Role;
 import jv.supermarket.entities.Usuario;
 import jv.supermarket.exceptions.AlreadyExistException;
 import jv.supermarket.exceptions.ResourceNotFoundException;
@@ -34,6 +35,11 @@ public class UsuarioService {
             throw new AlreadyExistException("Já existe um usuário com este email");
         }
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+
+        Role role = new Role();
+        role.setId(3l);
+        usuario.getRoles().add(role);
+
         usuario = userRepo.save(usuario);
 
         if (usuario.getCarrinho() == null) {
