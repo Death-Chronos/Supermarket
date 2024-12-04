@@ -15,6 +15,7 @@ import jv.supermarket.entities.Role;
 import jv.supermarket.entities.Usuario;
 import jv.supermarket.exceptions.AlreadyExistException;
 import jv.supermarket.exceptions.ResourceNotFoundException;
+import jv.supermarket.repositories.RoleRepository;
 import jv.supermarket.repositories.UsuarioRepository;
 
 @Service
@@ -27,17 +28,53 @@ public class UsuarioService {
     private CarrinhoService carrinhoService;
 
     @Autowired
+    private RoleRepository roleRepo;
+
+    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
-    public Usuario saveUsuario(Usuario usuario) {
+    public Usuario saveCliente(Usuario usuario) {
         if (existsByEmail(usuario.getEmail())) {
             throw new AlreadyExistException("Já existe um usuário com este email");
         }
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
 
-        Role role = new Role();
-        role.setId(3l);
+        Role role = roleRepo.findByNome("ROLE_CLIENTE");
+        usuario.getRoles().add(role);
+
+        usuario = userRepo.save(usuario);
+
+        if (usuario.getCarrinho() == null) {
+            Carrinho carrinho = new Carrinho();
+            carrinho.setUser(usuario);
+
+            carrinhoService.saveCarrinho(carrinho);
+        }
+        return usuario;
+    }
+    @Transactional
+    public Usuario saveAdmin(Usuario usuario) {
+        if (existsByEmail(usuario.getEmail())) {
+            throw new AlreadyExistException("Já existe um usuário com este email");
+        }
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+
+        Role role = roleRepo.findByNome("ROLE_ADMIN");
+        usuario.getRoles().add(role);
+
+        usuario = userRepo.save(usuario);
+        return usuario;
+    }
+
+    @Transactional
+    public Usuario saveFuncionario(Usuario usuario) {
+        if (existsByEmail(usuario.getEmail())) {
+            throw new AlreadyExistException("Já existe um usuário com este email");
+        }
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+
+        Role role = roleRepo.findByNome("ROLE_FUNCIONARIO");
         usuario.getRoles().add(role);
 
         usuario = userRepo.save(usuario);

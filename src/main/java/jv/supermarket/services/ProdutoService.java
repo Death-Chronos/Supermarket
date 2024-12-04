@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import jv.supermarket.DTOs.ProdutoDTO;
+import jv.supermarket.DTOs.request.ProdutoRequestDTO;
 import jv.supermarket.entities.Categoria;
 import jv.supermarket.entities.Produto;
 import jv.supermarket.exceptions.AlreadyExistException;
@@ -33,16 +34,20 @@ public class ProdutoService {
     }
 
     @Transactional
-    public Produto saveProduto(Produto produto, List<String> categoriaNomes) {
-        if (produtoExist(produto.getNome(), produto.getMarca())) {
+    public Produto saveProduto(ProdutoRequestDTO dto) {
+        if (produtoExist(dto.getNome(), dto.getMarca())) {
             throw new AlreadyExistException("Já existe um produto com este nome e marca.");
         }
-        produto = addCategoriasEmProduto(categoriaNomes, produto);
+        Produto produto = new Produto();
+        BeanUtils.copyProperties(dto, produto);
+
+        produto = addCategoriasEmProduto(produto, dto.getCategorias());
+
         return pr.save(produto);
     }
 
-    public Produto addCategoriasEmProduto(List<String> categoriasNomes, Produto produto) {
-        for (String categoriaNome : categoriasNomes) {
+    public Produto addCategoriasEmProduto(Produto produto, List<String> categorias) {
+        for (String categoriaNome :categorias) {
             if (cr.existsByNome(categoriaNome)) {
                 Categoria categoria = cr.findByNome(categoriaNome);
                 produto.getCategorias().add(categoria);

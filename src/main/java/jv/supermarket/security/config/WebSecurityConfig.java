@@ -52,6 +52,8 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/h2-console/**")
                     .permitAll()
+                .requestMatchers(url_auth+"**")
+                    .permitAll()
                 .requestMatchers(HttpMethod.GET, url_produtos+"**")
                     .hasAnyRole("ADMIN", "FUNCIONARIO", "CLIENTE")
                 .requestMatchers(HttpMethod.POST, url_produtos + "save")
@@ -59,9 +61,7 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.PUT, url_produtos + "**")
                     .hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, url_produtos + "**")
-                    .hasRole("ADMIN")
-                .requestMatchers(url_auth+"**")
-                    .permitAll());
+                    .hasRole("ADMIN"));
 
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         

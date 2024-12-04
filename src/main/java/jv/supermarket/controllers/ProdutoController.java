@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import jv.supermarket.DTOs.ProdutoDTO;
+import jv.supermarket.DTOs.request.ProdutoRequestDTO;
 import jv.supermarket.config.RespostaAPI;
 import jv.supermarket.entities.Produto;
 import jv.supermarket.exceptions.ResourceNotFoundException;
@@ -32,9 +33,9 @@ public class ProdutoController {
     private ProdutoService produtoService;
 
     @PostMapping("/save")
-    public ResponseEntity<Produto> saveProduto(@RequestBody @Valid Produto produto, @RequestParam List<String> categorias) {
+    public ResponseEntity<Produto> saveProduto(@RequestBody @Valid ProdutoRequestDTO produto) {
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(produtoService.saveProduto(produto,categorias));
+        return ResponseEntity.status(HttpStatus.CREATED).body(produtoService.saveProduto(produto));
 
     }
 

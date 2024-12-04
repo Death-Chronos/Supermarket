@@ -45,7 +45,7 @@ public class AuthController {
 
     @PostMapping("/registrar")
     public ResponseEntity<AuthResponseDTO> saveUsuario(@RequestBody @Valid Usuario user){
-        Usuario usuario = userService.saveUsuario(user);
+        Usuario usuario = userService.saveCliente(user);
         String token = tokenService.gerarToken(usuario);
         return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponseDTO(usuario.getNome(),token));
     }
