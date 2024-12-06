@@ -12,9 +12,7 @@ import jv.supermarket.DTOs.request.ProdutoRequestDTO;
 import jv.supermarket.entities.Carrinho;
 import jv.supermarket.entities.Categoria;
 import jv.supermarket.entities.Produto;
-import jv.supermarket.entities.Role;
 import jv.supermarket.entities.Usuario;
-import jv.supermarket.repositories.RoleRepository;
 import jv.supermarket.services.CarrinhoItemService;
 import jv.supermarket.services.CarrinhoService;
 import jv.supermarket.services.CategoriaService;
@@ -24,7 +22,7 @@ import jv.supermarket.services.UsuarioService;
 
 @Configuration
 @Profile("test")
-public class InicializadorBD implements CommandLineRunner {
+public class InicializadorBDTest implements CommandLineRunner {
 
     @Autowired
     private ProdutoService produtoService;
@@ -44,31 +42,13 @@ public class InicializadorBD implements CommandLineRunner {
     @Autowired
     private PedidoService pedidoService;
 
-    @Autowired
-    private RoleRepository roleRepository;
-
     @Override
     public void run(String... args) throws Exception {
 
-        //Se usar Role ou AnyRole na config de segurança, deve ter o ROLE_ antes do nome da role
-        Role role = new Role();
-        role.setNome("ROLE_ADMIN");
-        roleRepository.save(role);
-
-        Role role2 = new Role();
-        role2.setNome("ROLE_FUNCIONARIO");
-        roleRepository.save(role2);
-
-        Role role3 = new Role();
-        role3.setNome("ROLE_CLIENTE");
-        roleRepository.save(role3);
-
-
-        Usuario adm = new Usuario("Adm", "adm@gmail.com", "123456");
+        
         Usuario cliente = new Usuario("joao", "joao@gmail.com", "123456");
         Usuario funcionario = new Usuario("kleber", "kleber@gmail.com", "123456");
 
-        adm = userService.saveAdmin(adm);
         cliente = userService.saveCliente(cliente);
         funcionario = userService.saveFuncionario(funcionario);
 

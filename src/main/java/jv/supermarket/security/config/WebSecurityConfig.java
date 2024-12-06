@@ -47,13 +47,15 @@ public class WebSecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        String url_produtos = "/supermarket/produto/";
         String url_auth = "/supermarket/auth/";
+        String url_produtos = "/supermarket/produto/";
+        String url_categorias = "/supermarket/categoria/";
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/h2-console/**")
                     .permitAll()
                 .requestMatchers(url_auth+"**")
                     .permitAll()
+                
                 .requestMatchers(HttpMethod.GET, url_produtos+"**")
                     .hasAnyRole("ADMIN", "FUNCIONARIO", "CLIENTE")
                 .requestMatchers(HttpMethod.POST, url_produtos + "save")
@@ -61,7 +63,17 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.PUT, url_produtos + "**")
                     .hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, url_produtos + "**")
-                    .hasRole("ADMIN"));
+                    .hasRole("ADMIN")
+                
+                .requestMatchers(HttpMethod.POST, url_categorias + "save")
+                    .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, url_categorias +"{id:\\d+}")
+                    .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, url_categorias +"{id:\\d+}")
+                    .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, url_categorias +"**")
+                    .hasAnyRole("ADMIN", "CLIENTE", "FUNCIONARIO"));
+
 
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         

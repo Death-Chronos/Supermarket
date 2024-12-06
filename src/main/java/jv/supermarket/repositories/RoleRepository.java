@@ -7,5 +7,7 @@ import jv.supermarket.entities.Role;
 public interface RoleRepository extends JpaRepository<Role, Long>{
 
     Role findByNome(String string);
+
+    boolean existsByNome(String roleName);
     
 }

@@ -129,7 +129,7 @@ public class UsuarioService {
         }
     }
 
-    private boolean existsByEmail(String email) {
+    public boolean existsByEmail(String email) {
         return userRepo.existsByEmail(email);
     }
 
