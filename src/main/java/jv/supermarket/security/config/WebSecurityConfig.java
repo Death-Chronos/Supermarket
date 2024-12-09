@@ -50,6 +50,7 @@ public class WebSecurityConfig {
         String url_auth = "/supermarket/auth/";
         String url_produtos = "/supermarket/produto/";
         String url_categorias = "/supermarket/categoria/";
+        String url_imagens = "/supermarket/imagem/";
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/h2-console/**")
                     .permitAll()
@@ -72,7 +73,17 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, url_categorias +"{id:\\d+}")
                     .hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, url_categorias +"**")
-                    .hasAnyRole("ADMIN", "CLIENTE", "FUNCIONARIO"));
+                    .hasAnyRole("ADMIN", "CLIENTE", "FUNCIONARIO")
+                    
+                .requestMatchers(HttpMethod.POST, url_imagens+"upload")
+                    .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, url_imagens +"{id:\\d+}")
+                    .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, url_imagens +"{id:\\d+}")
+                    .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, url_imagens+"**")
+                    .hasAnyRole("ADMIN", "FUNCIONARIO", "CLIENTE"));
+                
 
 
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
