@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 
 import jv.supermarket.DTOs.request.ProdutoRequestDTO;
 import jv.supermarket.entities.Carrinho;
@@ -22,6 +23,7 @@ import jv.supermarket.services.UsuarioService;
 
 @Configuration
 @Profile("test")
+@Order(2)
 public class InicializadorBDTest implements CommandLineRunner {
 
     @Autowired
@@ -45,12 +47,11 @@ public class InicializadorBDTest implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        
-        Usuario cliente = new Usuario("joao", "joao@gmail.com", "123456");
         Usuario funcionario = new Usuario("kleber", "kleber@gmail.com", "123456");
+        Usuario cliente = new Usuario("joao", "joao@gmail.com", "123456");
 
-        cliente = userService.saveCliente(cliente);
         funcionario = userService.saveFuncionario(funcionario);
+        cliente = userService.saveCliente(cliente);
 
         // Criação de Categorias
         Categoria c1 = new Categoria("Eletrônicos");
@@ -65,23 +66,27 @@ public class InicializadorBDTest implements CommandLineRunner {
         categoriaService.saveCategoria(c1);
 
         // Criação e associação de Produtos
-        Produto p1 = produtoService.saveProduto(new ProdutoRequestDTO("Smartphone", "Samsung", new BigDecimal(3000), 20, "O melhor da Samsung", Arrays.asList("Smartphones", "Eletrônicos")));
+        Produto p1 = produtoService.saveProduto(new ProdutoRequestDTO("Smartphone", "Samsung", new BigDecimal(3000), 20,
+                "O melhor da Samsung", Arrays.asList("Smartphones", "Eletrônicos")));
 
-        produtoService.saveProduto(new ProdutoRequestDTO("Smartphone", "Xiaomi", new BigDecimal(3200), 32, "O mundo todo no seu bolso", Arrays.asList("Smartphones", "Eletrônicos")));
+        produtoService.saveProduto(new ProdutoRequestDTO("Smartphone", "Xiaomi", new BigDecimal(3200), 32,
+                "O mundo todo no seu bolso", Arrays.asList("Smartphones", "Eletrônicos")));
 
-        produtoService.saveProduto(new ProdutoRequestDTO("Geladeira", "Samsung", new BigDecimal(4000), 10, "Gela que é uma beleza!", Arrays.asList("Cozinha", "Eletrônicos")));
- 
-        Produto p4 = produtoService.saveProduto(new ProdutoRequestDTO("Cama de Casal", "Plumatex", new BigDecimal(1500), 5, "O que há de conforto para você", Arrays.asList("Mobília")));
+        produtoService.saveProduto(new ProdutoRequestDTO("Geladeira", "Samsung", new BigDecimal(4000), 10,
+                "Gela que é uma beleza!", Arrays.asList("Cozinha", "Eletrônicos")));
+
+        Produto p4 = produtoService.saveProduto(new ProdutoRequestDTO("Cama de Casal", "Plumatex", new BigDecimal(1500),
+                5, "O que há de conforto para você", Arrays.asList("Mobília")));
 
         Carrinho carrinho = carrinhoService.getById(cliente.getId());
-        
-        itemService.adicionarItemNoCarrinho(p1.getId(), 2, carrinho.getId());        
+
+        itemService.adicionarItemNoCarrinho(p1.getId(), 2, carrinho.getId());
         itemService.adicionarItemNoCarrinho(p4.getId(), 1, carrinho.getId());
         itemService.removerItemDoCarrinho(carrinho.getId(), p4.getId());
         itemService.updateItemQuantidade(carrinho.getId(), p1.getId(), 3);
-        
+
         pedidoService.createPedido(cliente.getId());
-        
+
     }
 
 }

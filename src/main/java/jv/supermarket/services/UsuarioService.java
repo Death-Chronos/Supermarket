@@ -91,7 +91,7 @@ public class UsuarioService {
     public Usuario getUsuarioLogado() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
-            return getByEmail(auth.getName());
+            return (Usuario) auth.getPrincipal(); // Recupera o objeto Usuario diretamente
         }
         throw new ResourceNotFoundException("Usuário logado não encontrado");
     }

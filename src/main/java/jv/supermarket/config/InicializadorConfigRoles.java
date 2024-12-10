@@ -3,6 +3,7 @@ package jv.supermarket.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 import jv.supermarket.entities.Role;
 import jv.supermarket.entities.Usuario;
@@ -10,6 +11,7 @@ import jv.supermarket.repositories.RoleRepository;
 import jv.supermarket.services.UsuarioService;
 
 @Configuration
+@Order(1)
 public class InicializadorConfigRoles implements CommandLineRunner {
 
     @Autowired

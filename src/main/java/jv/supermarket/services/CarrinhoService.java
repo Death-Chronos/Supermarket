@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import jv.supermarket.DTOs.CarrinhoDTO;
 import jv.supermarket.DTOs.CarrinhoItemDTO;
 import jv.supermarket.entities.Carrinho;
@@ -39,6 +40,7 @@ public class CarrinhoService {
         return convertToDTO(carrinho);
     }
 
+    @Transactional
     public void limparCarrinho(Long carrinhoId){
         Carrinho carrinho = carrinhoRepo.findById(carrinhoId).orElseThrow(() -> new ResourceNotFoundException("Carrinho não encontrado com o Id:" + carrinhoId));
         itemRepo.deleteAllByCarrinhoId(carrinhoId);

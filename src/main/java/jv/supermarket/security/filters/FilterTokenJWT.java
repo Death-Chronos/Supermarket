@@ -15,6 +15,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jv.supermarket.entities.Role;
 import jv.supermarket.entities.Usuario;
 import jv.supermarket.exceptions.ResourceNotFoundException;
 import jv.supermarket.repositories.UsuarioRepository;
@@ -42,14 +43,18 @@ public class FilterTokenJWT extends OncePerRequestFilter {
                 Usuario user = userRepo.findByEmail(login);
 
                 if (user == null) {
-                    throw new ResourceNotFoundException("usuário não encontrado com o email: "+ login);
+                    throw new ResourceNotFoundException("usuário não encontrado com o email: " + login);
                 }
                 Set<SimpleGrantedAuthority> authorities = user.getRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority(role.getAuthority()))
+                        .map(role -> new SimpleGrantedAuthority(role.getNome()))
                         .collect(Collectors.toSet());
 
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(user, null, authorities);
+                System.out.println("Usuário autenticado: " + login);
+                System.out.println("Roles do usuário autenticado: " +
+                        user.getRoles().stream().map(Role::getNome).collect(Collectors.toList()));
+
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null,
+                        authorities);
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
@@ -74,6 +79,3 @@ public class FilterTokenJWT extends OncePerRequestFilter {
         return authHeader.replace("Bearer ", "").trim();
     }
 }
-
-    
-

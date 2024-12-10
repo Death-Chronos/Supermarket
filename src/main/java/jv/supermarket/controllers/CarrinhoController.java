@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jv.supermarket.DTOs.CarrinhoDTO;
 import jv.supermarket.config.RespostaAPI;
+import jv.supermarket.entities.Usuario;
 import jv.supermarket.services.CarrinhoItemService;
 import jv.supermarket.services.CarrinhoService;
+import jv.supermarket.services.UsuarioService;
 
 @RestController
-@RequestMapping("supermarket/carrinho")
+@RequestMapping("/supermarket/carrinho")
 public class CarrinhoController {
 
     @Autowired
@@ -28,35 +30,48 @@ public class CarrinhoController {
 
     @Autowired
     CarrinhoItemService ItemService;
-    
-    @GetMapping("/{id}")
-    public ResponseEntity<CarrinhoDTO> mostrarCarrinho(@PathVariable Long id){
-        return ResponseEntity.status(HttpStatus.OK).body(carrinhoService.getCarrinho(id));
+
+    @Autowired
+    UsuarioService usuarioService;
+
+    @GetMapping("/show")
+    public ResponseEntity<CarrinhoDTO> mostrarCarrinho() {
+        Usuario user = usuarioService.getUsuarioLogado();
+
+        return ResponseEntity.status(HttpStatus.OK).body(carrinhoService.getCarrinho(user.getId()));
     }
 
-    @PostMapping("/{carrinhoId}/addItem/{itemId}")
-    public ResponseEntity<RespostaAPI> adicionarItem(@PathVariable Long carrinhoId, @PathVariable Long itemId, @RequestParam int quantidade) {
-        ItemService.adicionarItemNoCarrinho(itemId, quantidade, carrinhoId);
-        return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),"Item de id: "+itemId +" adicionado no carrinho com id: "+carrinhoId+" com sucesso."));
-    }
-    
-    @DeleteMapping("/{carrinhoId}/removeItem/{itemId}")
-    public ResponseEntity<RespostaAPI> removerItem(@PathVariable Long carrinhoId, @PathVariable Long itemId) {
-        ItemService.removerItemDoCarrinho(carrinhoId, itemId);
-        return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),"Item de id: "+itemId +" removido do carrinho com id: "+carrinhoId+" com sucesso."));
+    @PostMapping("/addItem/{itemId}")
+    public ResponseEntity<RespostaAPI> adicionarItem(@PathVariable Long itemId, @RequestParam int quantidade) {
+        Usuario user = usuarioService.getUsuarioLogado();
+        ItemService.adicionarItemNoCarrinho(itemId, quantidade, user.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),
+                "Item de id: " + itemId + " adicionado no carrinho com id: " + user.getId() + " com sucesso."));
     }
 
-    @PutMapping("/{carrinhoId}/item/{itemId}/update")
-    public ResponseEntity<RespostaAPI> updateItemQuantidade(@PathVariable Long carrinhoId, @PathVariable Long itemId, @RequestParam int quantidade) {
-        ItemService.updateItemQuantidade(itemId, carrinhoId, quantidade);
-        return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),"Item de id: "+itemId +" modificado no carrinho com id: "+carrinhoId+" com sucesso."));
+    @DeleteMapping("/removeItem/{itemId}")
+    public ResponseEntity<RespostaAPI> removerItem(@PathVariable Long itemId) {
+        Usuario user = usuarioService.getUsuarioLogado();
+        ItemService.removerItemDoCarrinho(user.getId(), itemId);
+        return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),
+                "Item de id: " + itemId + " removido do carrinho com id: " + user.getId() + " com sucesso."));
     }
 
-    @DeleteMapping("/{carrinhoId}/clear")
-    public ResponseEntity<RespostaAPI> limparCarrinho(@PathVariable Long carrinhoId) {
-        carrinhoService.limparCarrinho(carrinhoId);
-        return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),"Carrinho com id: "+carrinhoId +" limpo com sucesso."));
+    @PutMapping("/item/{itemId}/update")
+    public ResponseEntity<RespostaAPI> updateItemQuantidade(@PathVariable Long itemId, @RequestParam int quantidade) {
+        Usuario user = usuarioService.getUsuarioLogado();
+        System.out.println("ID do usuario: " + user.getId());
+        ItemService.updateItemQuantidade(user.getId(), itemId, quantidade);
+        return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),
+                "Item de id: " + itemId + " modificado no carrinho com id: " + user.getId() + " com sucesso."));
     }
 
+    @DeleteMapping("/clear")
+    public ResponseEntity<RespostaAPI> limparCarrinho() {
+        Usuario user = usuarioService.getUsuarioLogado();
+        carrinhoService.limparCarrinho(user.getId());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new RespostaAPI(Instant.now(), "Carrinho com id: " + user.getId() + " limpo com sucesso."));
+    }
 
 }
