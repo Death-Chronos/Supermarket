@@ -85,7 +85,6 @@ public class InicializadorBDTest implements CommandLineRunner {
         itemService.removerItemDoCarrinho(carrinho.getId(), p4.getId());
         itemService.updateItemQuantidade(carrinho.getId(), p1.getId(), 3);
 
-        pedidoService.createPedido(cliente.getId());
 
     }
 

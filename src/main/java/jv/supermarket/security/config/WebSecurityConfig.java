@@ -52,6 +52,8 @@ public class WebSecurityConfig {
         String url_categorias = "/supermarket/categoria/";
         String url_imagens = "/supermarket/imagem/";
         String url_carrinho = "/supermarket/carrinho/";
+        String url_pedido = "/supermarket/pedido/";
+        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));  
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/h2-console/**")
                     .permitAll()
@@ -69,6 +71,8 @@ public class WebSecurityConfig {
                 
                 .requestMatchers(HttpMethod.POST, url_categorias + "save")
                     .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, url_categorias +"{id:\\d+}/addEstoque")
+                    .hasAnyRole("ADMIN", "FUNCIONARIO")
                 .requestMatchers(HttpMethod.PUT, url_categorias +"{id:\\d+}")
                     .hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, url_categorias +"{id:\\d+}")
@@ -94,6 +98,15 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.PUT, url_carrinho+"item/{itemId:\\d+}/update")
                     .hasRole("CLIENTE")
                 .requestMatchers(HttpMethod.DELETE, url_carrinho+"clear")
+                    .hasRole("CLIENTE")
+                    
+                .requestMatchers(HttpMethod.POST, url_pedido+"criar")
+                    .hasRole("CLIENTE")
+                .requestMatchers(HttpMethod.GET, url_pedido+"{id:\\d+}")
+                    .hasAnyRole("ADMIN","CLIENTE")
+                .requestMatchers(HttpMethod.GET, url_pedido+"by-user")
+                    .hasRole("CLIENTE")
+                .requestMatchers(HttpMethod.DELETE, url_pedido+"cancelar")
                     .hasRole("CLIENTE"));
                 
 

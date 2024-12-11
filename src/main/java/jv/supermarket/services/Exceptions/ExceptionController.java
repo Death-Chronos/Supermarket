@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -97,4 +98,15 @@ public class ExceptionController {
         Mensagem mensagem = new Mensagem(Instant.now(), status.value(), erro, request.getRequestURI(), detalhes);
         return ResponseEntity.status(status).body(mensagem);
     }
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Mensagem> acessoNegado(AccessDeniedException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        String erro = "Erro ao acessar recurso";
+        ArrayList<String> detalhes = new ArrayList<String>();
+        detalhes.add(e.getMessage());
+        Mensagem mensagem = new Mensagem(Instant.now(), status.value(), erro, request.getRequestURI(), detalhes);
+        return ResponseEntity.status(status).body(mensagem);
+    }
+
+    
 }

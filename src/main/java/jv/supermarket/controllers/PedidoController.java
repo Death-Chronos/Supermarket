@@ -27,8 +27,8 @@ public class PedidoController {
     PedidoService pedidoService;
 
     @PostMapping("/criar")
-    public ResponseEntity<Pedido> criarPedido(@RequestParam Long userId) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(pedidoService.createPedido(userId));
+    public ResponseEntity<Pedido> criarPedido() {
+        return ResponseEntity.status(HttpStatus.CREATED).body(pedidoService.createPedido());
     }
     
     @GetMapping("/{id}")
@@ -36,9 +36,9 @@ public class PedidoController {
         return ResponseEntity.status(HttpStatus.OK).body(pedidoService.getPedido(id));
     }
 
-    @GetMapping("by-user-id/{userId}")
-    public ResponseEntity<Set<PedidoDTO>> getPedidoByUserId(@PathVariable Long userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(pedidoService.getPedidosByUsuario(userId));
+    @GetMapping("by-user")
+    public ResponseEntity<Set<PedidoDTO>> getPedidoByUser() {
+        return ResponseEntity.status(HttpStatus.OK).body(pedidoService.getPedidosByUsuario());
     }
 
     @DeleteMapping("/cancelar")

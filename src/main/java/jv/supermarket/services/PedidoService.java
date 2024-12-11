@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -16,12 +17,15 @@ import jv.supermarket.entities.CarrinhoItem;
 import jv.supermarket.entities.Pedido;
 import jv.supermarket.entities.PedidoItem;
 import jv.supermarket.entities.Produto;
+import jv.supermarket.entities.Role;
+import jv.supermarket.entities.Usuario;
 import jv.supermarket.entities.enums.PedidoStatus;
 import jv.supermarket.exceptions.OutOfStockException;
 import jv.supermarket.exceptions.ResourceNotFoundException;
 import jv.supermarket.repositories.PedidoItemRepository;
 import jv.supermarket.repositories.PedidoRepository;
 import jv.supermarket.repositories.ProdutoRepository;
+import jv.supermarket.repositories.RoleRepository;
 
 @Service
 public class PedidoService {
@@ -44,9 +48,13 @@ public class PedidoService {
     @Autowired
     ProdutoService produtoService;
 
+    @Autowired
+    RoleRepository roleRepo;
+
     @Transactional
-    public Pedido createPedido(Long UserId) {
-        Carrinho carrinho = carrinhoService.getById(UserId);
+    public Pedido createPedido() {
+        Usuario user = userService.getUsuarioLogado();
+        Carrinho carrinho = carrinhoService.getById(user.getId());
         if (carrinho.getItens().isEmpty()) {
             throw new ResourceNotFoundException(
                     "Carrinho vazio. Adicione itens a ele primeiro antes de tentar realizar um pedido");
@@ -60,7 +68,7 @@ public class PedidoService {
         for (PedidoItem pedidoItem : itens) {
             pedido.addItem(pedidoItem);
         }
-        pedido.setUser(userService.getById(UserId));
+        pedido.setUser(user);
         pedido.setStatus(PedidoStatus.ESPERANDO_PAGAMENTO);
         pedido.setData(LocalDateTime.now());
 
@@ -70,14 +78,30 @@ public class PedidoService {
 
     }
 
+    @Transactional
     public PedidoDTO getPedido(Long id) {
+        Usuario user = userService.getUsuarioLogado();
         Pedido pedido = getById(id);
-        PedidoDTO dto = convertPedidoToDTO(pedido);
-        return dto;
+
+        for (Role role : user.getRoles()) {
+            if (role.getNome().equals("ROLE_ADMIN")) {
+                PedidoDTO dto = convertPedidoToDTO(pedido);
+                return dto;
+            } else if (role.getNome().equals("ROLE_CLIENTE")) {
+                if (pedido.getUser().getId().equals(user.getId())) {
+                    PedidoDTO dto = convertPedidoToDTO(pedido);
+                    return dto;
+                }
+            }
+        }
+        throw new AccessDeniedException("Pedido não encontrado para este cliente");
     }
 
-    public Set<PedidoDTO> getPedidosByUsuario(Long userId) {
-        Set<Pedido> pedidos = pedidoRepo.findByUserId(userId);
+    public Set<PedidoDTO> getPedidosByUsuario() {
+        Set<Pedido> pedidos = pedidoRepo.findByUserId(userService.getUsuarioLogado().getId());
+        if (pedidos == null || pedidos.size() == 0) {
+            throw new ResourceNotFoundException("O usuário não possui nenhum pedido");
+        }
         return pedidos.stream()
                 .map(pedido -> convertPedidoToDTO(pedido))
                 .collect(Collectors.toSet());
