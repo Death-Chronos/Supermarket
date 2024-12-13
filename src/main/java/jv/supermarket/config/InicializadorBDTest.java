@@ -26,7 +26,7 @@ import jv.supermarket.services.UsuarioService;
 @Order(2)
 public class InicializadorBDTest implements CommandLineRunner {
 
-    @Autowired
+@Autowired
     private ProdutoService produtoService;
 
     @Autowired
@@ -41,6 +41,7 @@ public class InicializadorBDTest implements CommandLineRunner {
     @Autowired
     private UsuarioService userService;
 
+    @SuppressWarnings("unused")
     @Autowired
     private PedidoService pedidoService;
 

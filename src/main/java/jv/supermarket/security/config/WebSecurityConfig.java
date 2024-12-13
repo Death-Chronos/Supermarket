@@ -53,6 +53,7 @@ public class WebSecurityConfig {
         String url_imagens = "/supermarket/imagem/";
         String url_carrinho = "/supermarket/carrinho/";
         String url_pedido = "/supermarket/pedido/";
+        String url_admin = "/supermarket/admin/";
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));  
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/h2-console/**")
@@ -107,7 +108,10 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.GET, url_pedido+"by-user")
                     .hasRole("CLIENTE")
                 .requestMatchers(HttpMethod.DELETE, url_pedido+"cancelar")
-                    .hasRole("CLIENTE"));
+                    .hasRole("CLIENTE")
+                    
+                .requestMatchers(HttpMethod.POST, url_admin+"criarFuncionario")
+                    .hasRole("ADMIN"));
                 
 
 
