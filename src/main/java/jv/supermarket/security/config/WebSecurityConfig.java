@@ -54,6 +54,7 @@ public class WebSecurityConfig {
         String url_carrinho = "/supermarket/carrinho/";
         String url_pedido = "/supermarket/pedido/";
         String url_admin = "/supermarket/admin/";
+        
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));  
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/h2-console/**")
