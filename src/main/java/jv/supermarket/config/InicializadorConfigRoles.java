@@ -44,6 +44,7 @@ public class InicializadorConfigRoles implements CommandLineRunner {
 
     private void criarAdminPadrao() {
         String email = "admin@gmail.com";
+        
         if (!usuarioService.existsByEmail(email)) {
             Usuario admin = new Usuario();
             admin.setNome("Administrador");
