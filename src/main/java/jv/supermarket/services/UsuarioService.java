@@ -91,10 +91,19 @@ public class UsuarioService {
     public Usuario getUsuarioLogado() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
-            return (Usuario) auth.getPrincipal(); // Recupera o objeto Usuario diretamente
+            Object principal = auth.getPrincipal();
+    
+            if (principal instanceof org.springframework.security.core.userdetails.User springUser) {
+                return getByEmail(springUser.getUsername()); // Busca no banco
+            }
+    
+            if (principal instanceof Usuario usuario) {
+                return usuario;
+            }
         }
         throw new ResourceNotFoundException("Usuário logado não encontrado");
     }
+    
 
     public Usuario getById(Long userId) {
         return userRepo.findById(userId)
