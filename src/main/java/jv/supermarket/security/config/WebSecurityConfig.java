@@ -61,6 +61,12 @@ public class WebSecurityConfig {
                     .permitAll()
                 .requestMatchers(url_auth+"**")
                     .permitAll()
+                    .requestMatchers(
+                        "/v3/api-docs/**",   // Documentação JSON
+                        "/swagger-ui/**",    // Recursos Swagger UI
+                        "/swagger-ui.html",  // Página inicial do Swagger
+                        "/webjars/**"        // Recursos estáticos
+                    ).permitAll()
                 
                 .requestMatchers(HttpMethod.GET, url_produtos+"**")
                     .hasAnyRole("ADMIN", "FUNCIONARIO", "CLIENTE")
