@@ -15,7 +15,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
     List<Produto> findByMarca(String marca);
 
-    List<Produto> findByMarcaAndNome(String marca, String nome);
+    Produto findByMarcaAndNome(String marca, String nome);
 
     @Query("SELECT p FROM Produto p JOIN FETCH p.categorias c WHERE c.nome = :nome")
     List<Produto> findByCategoriaNome(@Param("nome") String nome);

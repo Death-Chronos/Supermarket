@@ -90,8 +90,19 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.OK).body(produtoService.getAllProdutos());
     }
 
+    @Operation(summary = "Busca todos os produtos pelo nome", description = "Busca todos os produtos pelo nome passado por um parâmetro")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", 
+            description = "Produtos encontrados com sucesso",
+            content = @Content(mediaType = "application/json", 
+                array = @ArraySchema(schema = @Schema(implementation = Produto.class)))),
+        @ApiResponse(responseCode = "404",
+            description = "Nenhum produto foi encontrado com o nome requisitado",
+            content =  @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Mensagem.class)))
+    })
     @GetMapping("/by-nome")
-    public ResponseEntity<List<Produto>> getProdutosByNome(@RequestParam String nome) {
+    public ResponseEntity<List<Produto>> getProdutosByNome(@Parameter(description = "Nome do produto a ser buscado") @RequestParam String nome) {
         List<Produto> produtos = produtoService.getProdutosByNome(nome);
         if (produtos.isEmpty()) {
             throw new ResourceNotFoundException("Nenhum produto foi encontrado com o Nome: " + nome);
@@ -99,8 +110,19 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.OK).body(produtos);
     }
 
+    @Operation(summary = "Busca todos os produtos pela marca", description = "Busca todos os produtos pela marca passada por um parâmetro")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", 
+            description = "Produtos encontrados com sucesso",
+            content = @Content(mediaType = "application/json", 
+                array = @ArraySchema(schema = @Schema(implementation = Produto.class)))),
+        @ApiResponse(responseCode = "404",
+            description = "Nenhum produto foi encontrado com a marca requisitado",
+            content =  @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Mensagem.class)))
+    })
     @GetMapping("/by-marca")
-    public ResponseEntity<List<Produto>> getProdutosByMarca(@RequestParam String marca) {
+    public ResponseEntity<List<Produto>> getProdutosByMarca(@Parameter(description = "Marca do produto a ser buscado") @RequestParam String marca) {
         List<Produto> produtos = produtoService.getProdutosByMarca(marca);
         if (produtos.isEmpty()) {
             throw new ResourceNotFoundException("Nenhum produto foi encontrado com a Marca: " + marca);
@@ -108,17 +130,40 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.OK).body(produtos);
     }
 
+    @Operation(summary = "Busca um produto pela marca e nome", description = "Busca um produto pela marca e nome passados por parâmetros")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", 
+            description = "Produto encontrado com sucesso",
+            content = @Content(mediaType = "application/json", 
+                array = @ArraySchema(schema = @Schema(implementation = Produto.class)))),
+        @ApiResponse(responseCode = "404",
+            description = "Nenhum produto foi encontrado com a marca requisitado",
+            content =  @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Mensagem.class)))
+    })
     @GetMapping("/by-marca-and-nome")
-    public ResponseEntity<List<Produto>> getProdutosByMarcaAndNome(@RequestParam String marca,
-            @RequestParam String nome) {
-        List<Produto> produtos = produtoService.getProdutosByMarcaAndNome(marca, nome);
-        if (produtos.isEmpty()) {
-            throw new ResourceNotFoundException(
-                    "Nenhum produto foi encontrado com a Marca: " + marca + " e o Nome: " + nome);
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(produtos);
+    public ResponseEntity<Produto> getProdutosByMarcaAndNome(@Parameter(description = "Nome da marca") @RequestParam String marca,
+            @Parameter(description = "Nome do produto") @RequestParam String nome) {
+        Produto produto = produtoService.getProdutoByMarcaAndNome(marca, nome);
+
+        return ResponseEntity.status(HttpStatus.OK).body(produto);
     }
 
+    @Operation(summary = "Busca todos os produtos pela categoria", description = "Busca todos os produtos pelo nome da categoria passado por um parâmetro")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", 
+            description = "Produtos encontrados com sucesso",
+            content = @Content(mediaType = "application/json", 
+                array = @ArraySchema(schema = @Schema(implementation = Produto.class)))),
+        @ApiResponse(responseCode = "404",
+            description = "Nenhum produto foi encontrado com a marca requisitado",
+            content =  @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Mensagem.class))),
+        @ApiResponse(responseCode = "404",
+            description = "Categoria informada não existe",
+            content =  @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Mensagem.class)))
+    })
     @GetMapping("/by-categoria-nome")
     public ResponseEntity<List<ProdutoDTO>> getProdutosByCategoriaNome(@RequestParam String nome) {
         List<ProdutoDTO> produtos = produtoService.getProdutosByCategoriaNome(nome);
@@ -128,12 +173,34 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.OK).body(produtos);
     }
 
+    @Operation(summary = "Atualiza um produto", description = "Atualiza um produto, recebendo o id do que será atualizado, e um json com as novas informações")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", 
+            description = "Produto atualizado com sucesso",
+            content = @Content(mediaType = "application/json", 
+                array = @ArraySchema(schema = @Schema(implementation = Produto.class)))),
+        @ApiResponse(responseCode = "404",
+            description = "Nenhum produto foi encontrado com o id informado",
+            content =  @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Mensagem.class)))
+    })
     @PutMapping("/{id}")
     public ResponseEntity<Produto> updateProduto(@PathVariable Long id, @RequestBody @Valid Produto produto) {
 
         return ResponseEntity.status(HttpStatus.OK).body(produtoService.updateProduto(produto, id));
     }
 
+    @Operation(summary = "Deleta um produto", description = "Deleta um produto, pelo id")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", 
+            description = "Produto deletado com sucesso",
+            content = @Content(mediaType = "application/json", 
+                schema = @Schema(implementation = RespostaAPI.class))),
+        @ApiResponse(responseCode = "404",
+            description = "Nenhum produto foi encontrado com o id informado",
+            content =  @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Mensagem.class)))
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<RespostaAPI> deleteProduto(@PathVariable Long id) {
         produtoService.deleteProdutoById(id);
@@ -142,8 +209,19 @@ public class ProdutoController {
                 .body(new RespostaAPI(Instant.now(), "Produto deletado com sucesso"));
     }
 
+    @Operation(summary = "Aumenta o estoque de um produto", description = "Aumenta o estoque de um produto, com base em um parâmetro informado")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", 
+            description = "Estoque do produto atualizado com sucesso",
+            content = @Content(mediaType = "application/json", 
+                schema = @Schema(implementation = Produto.class))),
+        @ApiResponse(responseCode = "404",
+            description = "Nenhum produto foi encontrado com o id informado",
+            content =  @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Mensagem.class)))
+    })
     @PutMapping("/{id}/addEstoque")
-    public ResponseEntity<Produto> aumentarEstoque(@PathVariable Long id, @RequestParam int quantidade) {
+    public ResponseEntity<Produto> aumentarEstoque(@PathVariable Long id, @Parameter(description = "Quantidade a somar no estoque do produto") @RequestParam int quantidade) {
         return ResponseEntity.status(HttpStatus.OK).body(produtoService.addProdutoEstoque(quantidade, id));
     }
 
