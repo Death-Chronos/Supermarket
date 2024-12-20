@@ -165,7 +165,7 @@ public class ProdutoController {
                 schema = @Schema(implementation = Mensagem.class)))
     })
     @GetMapping("/by-categoria-nome")
-    public ResponseEntity<List<ProdutoDTO>> getProdutosByCategoriaNome(@RequestParam String nome) {
+    public ResponseEntity<List<ProdutoDTO>> getProdutosByCategoriaNome(@Parameter(description="Nome da categoria que será buscado os produtos")@RequestParam String nome) {
         List<ProdutoDTO> produtos = produtoService.getProdutosByCategoriaNome(nome);
         if (produtos.isEmpty()) {
             throw new ResourceNotFoundException("Nenhum produto foi encontrado com a Categoria: " + nome);
