@@ -14,12 +14,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jv.supermarket.DTOs.CarrinhoDTO;
 import jv.supermarket.config.RespostaAPI;
+import jv.supermarket.entities.Carrinho;
 import jv.supermarket.entities.Usuario;
 import jv.supermarket.services.CarrinhoItemService;
 import jv.supermarket.services.CarrinhoService;
 import jv.supermarket.services.UsuarioService;
+import jv.supermarket.services.Exceptions.Mensagem;
 
 @RestController
 @RequestMapping("/supermarket/carrinho")
@@ -34,6 +42,17 @@ public class CarrinhoController {
     @Autowired
     UsuarioService usuarioService;
 
+    @Operation(summary = "Retorna o carrinho do Usuário logado")
+    @ApiResponses({
+        @ApiResponse(description = "Carrinho do Usuário retornado com sucesso", 
+            responseCode = "200",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Carrinho.class))),
+        @ApiResponse(responseCode = "404",
+            description = "Carrinho não encontrado. Usuário necessita ser um cliente para ter um carrinho",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Mensagem.class)))
+    })
     @GetMapping("/show")
     public ResponseEntity<CarrinhoDTO> mostrarCarrinho() {
         Usuario user = usuarioService.getUsuarioLogado();
@@ -41,14 +60,48 @@ public class CarrinhoController {
         return ResponseEntity.status(HttpStatus.OK).body(carrinhoService.getCarrinho(user.getId()));
     }
 
+    @Operation(summary = "Adiciona um item no carrinho", description="Adiciona um item no carrinho do usuário pelo id do Produto, se o produto já existir no carrinho, ele apenas soma a quantidade.")
+    @ApiResponses({
+        @ApiResponse(responseCode="200",
+            description = "Item adicionado com sucesso.",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = RespostaAPI.class))),
+        @ApiResponse(responseCode="404",
+        description = "Item não encontrado. Verifique o id do produto",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Mensagem.class))),
+        @ApiResponse(responseCode="400",
+            description = "Quantidade inválida. A quantidade deve ser um número inteiro positivo",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Mensagem.class))),
+        @ApiResponse(responseCode="404",
+            description = "Carrinho não encontrado. Usuário necessita ser um cliente para ter um carrinho",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Mensagem.class)))
+    })
     @PostMapping("/addItem/{itemId}")
-    public ResponseEntity<RespostaAPI> adicionarItem(@PathVariable Long itemId, @RequestParam int quantidade) {
+    public ResponseEntity<RespostaAPI> adicionarItem(@Parameter(description = "Id do produto a ser adicionado") @PathVariable Long itemId, @Parameter(description = "Quantidade do produto a ser adicionado") @RequestParam int quantidade) {
         Usuario user = usuarioService.getUsuarioLogado();
         ItemService.adicionarItemNoCarrinho(itemId, quantidade, user.getId());
         return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),
                 "Item de id: " + itemId + " adicionado no carrinho com id: " + user.getId() + " com sucesso."));
     }
 
+    @Operation(summary = "Remove um item no carrinho", description="Remove um item no carrinho do usuário pelo id do Produto")
+    @ApiResponses({
+        @ApiResponse(responseCode="200",
+            description = "Item removido com sucesso.",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = RespostaAPI.class))),
+        @ApiResponse(responseCode="404",
+        description = "Item não encontrado. Verifique o id do produto",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Mensagem.class))),
+        @ApiResponse(responseCode="404",
+            description = "Carrinho não encontrado. Usuário necessita ser um cliente para ter um carrinho",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Mensagem.class)))
+    })
     @DeleteMapping("/removeItem/{itemId}")
     public ResponseEntity<RespostaAPI> removerItem(@PathVariable Long itemId) {
         Usuario user = usuarioService.getUsuarioLogado();
@@ -57,6 +110,25 @@ public class CarrinhoController {
                 "Item de id: " + itemId + " removido do carrinho com id: " + user.getId() + " com sucesso."));
     }
 
+    @Operation(summary = "Modifica a quantidade de um item no carrinho", description="Modifica a quantidade de um item no carrinho do usuário pelo id do Produto")
+    @ApiResponses({
+        @ApiResponse(responseCode="200",
+            description = "Item atualizado com sucesso.",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = RespostaAPI.class))),
+        @ApiResponse(responseCode="404",
+        description = "Item não encontrado. Verifique o id do produto",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Mensagem.class))),
+        @ApiResponse(responseCode="400",
+            description = "Quantidade inválida. A quantidade deve ser um número inteiro positivo",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Mensagem.class))),
+        @ApiResponse(responseCode="404",
+            description = "Carrinho não encontrado. Usuário necessita ser um cliente para ter um carrinho",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Mensagem.class)))
+    })
     @PutMapping("/item/{itemId}/update")
     public ResponseEntity<RespostaAPI> updateItemQuantidade(@PathVariable Long itemId, @RequestParam int quantidade) {
         Usuario user = usuarioService.getUsuarioLogado();
@@ -66,6 +138,17 @@ public class CarrinhoController {
                 "Item de id: " + itemId + " modificado no carrinho com id: " + user.getId() + " com sucesso."));
     }
 
+    @Operation(summary = "Esvazia o carrinho do Usuário")
+    @ApiResponses({
+        @ApiResponse(responseCode="200",
+            description = "Carrinho limpo com sucesso.",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = RespostaAPI.class))),
+        @ApiResponse(responseCode="404",
+            description = "Carrinho não encontrado. Usuário necessita ser um cliente para ter um carrinho",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Mensagem.class)))
+    })
     @DeleteMapping("/clear")
     public ResponseEntity<RespostaAPI> limparCarrinho() {
         Usuario user = usuarioService.getUsuarioLogado();
