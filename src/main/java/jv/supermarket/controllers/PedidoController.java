@@ -106,7 +106,7 @@ public class PedidoController {
                 schema = @Schema(implementation = Mensagem.class)))
     })
     @DeleteMapping("/{id}/cancelar")
-    public ResponseEntity<RespostaAPI> cancelarPedido(@Parameter(description = "Id do pedido") @PathVariable Long pedidoId) {
+    public ResponseEntity<RespostaAPI> cancelarPedido(@Parameter(description = "Id do pedido") @PathVariable(name = "id") Long pedidoId) {
         pedidoService.cancelarPedido(pedidoId);
         return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(), "Pedido cancelado com sucesso."));
     }
