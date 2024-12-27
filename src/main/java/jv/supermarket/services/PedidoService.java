@@ -113,9 +113,22 @@ public class PedidoService {
     }
 
     public Pedido cancelarPedido(Long pedidoId) {
+        Usuario user = userService.getUsuarioLogado();
         Pedido pedido = getById(pedidoId);
-        pedido.setStatus(PedidoStatus.CANCELADO);
-        return pedidoRepo.save(pedido);
+
+        for (Role role : user.getRoles()) {
+            if (role.getNome().equals("ROLE_ADMIN")) {
+                pedido.setStatus(PedidoStatus.CANCELADO);
+                return pedidoRepo.save(pedido);
+            } else if (role.getNome().equals("ROLE_CLIENTE")) {
+                if (pedido.getUser().getId().equals(user.getId())) {
+                    pedido.setStatus(PedidoStatus.CANCELADO);
+                    return pedidoRepo.save(pedido);
+                }
+            }
+        }
+        throw new AccessDeniedException("Pedido não encontrado para este cliente");
+
     }
 
     private void verificarEstoqueCarrinho(Carrinho carrinho) {
