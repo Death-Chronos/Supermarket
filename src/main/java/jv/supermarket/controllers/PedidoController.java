@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,7 +34,7 @@ public class PedidoController {
     @Autowired
     PedidoService pedidoService;
 
-    @Operation(summary = "Criar um pedido", description = "Criar um pedido com base nos produtos adicionados no carrinho do usuário")
+    @Operation(summary = "Cria um pedido", description = "Cria um pedido com base nos produtos adicionados no carrinho do usuário")
     @ApiResponses({
         @ApiResponse(responseCode="201",
             description = "Pedido criado com sucesso.",
@@ -69,7 +70,7 @@ public class PedidoController {
                 schema = @Schema(implementation = Mensagem.class)))
     })
     @GetMapping("/{id}")
-    public ResponseEntity<PedidoDTO> getPedidoById(@PathVariable Long id) {
+    public ResponseEntity<PedidoDTO> getPedidoById(@Parameter(description = "Id do pedido") @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(pedidoService.getPedido(id));
     }
 
@@ -104,8 +105,8 @@ public class PedidoController {
             content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = Mensagem.class)))
     })
-    @DeleteMapping("/cancelar")
-    public ResponseEntity<RespostaAPI> cancelarPedido(@RequestParam Long pedidoId) {
+    @DeleteMapping("/{id}/cancelar")
+    public ResponseEntity<RespostaAPI> cancelarPedido(@Parameter(description = "Id do pedido") @PathVariable Long pedidoId) {
         pedidoService.cancelarPedido(pedidoId);
         return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(), "Pedido cancelado com sucesso."));
     }
