@@ -3,6 +3,7 @@ package jv.supermarket.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +14,7 @@ import jakarta.transaction.Transactional;
 import jv.supermarket.entities.Carrinho;
 import jv.supermarket.entities.Role;
 import jv.supermarket.entities.Usuario;
+import jv.supermarket.entities.enums.PedidoStatus;
 import jv.supermarket.exceptions.AlreadyExistException;
 import jv.supermarket.exceptions.ResourceNotFoundException;
 import jv.supermarket.repositories.RoleRepository;
@@ -53,6 +55,7 @@ public class UsuarioService {
         }
         return usuario;
     }
+
     @Transactional
     public Usuario saveAdmin(Usuario usuario) {
         if (existsByEmail(usuario.getEmail())) {
@@ -92,18 +95,17 @@ public class UsuarioService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
             Object principal = auth.getPrincipal();
-    
+
             if (principal instanceof org.springframework.security.core.userdetails.User springUser) {
                 return getByEmail(springUser.getUsername()); // Busca no banco
             }
-    
+
             if (principal instanceof Usuario usuario) {
                 return usuario;
             }
         }
         throw new ResourceNotFoundException("Usuário logado não encontrado");
     }
-    
 
     public Usuario getById(Long userId) {
         return userRepo.findById(userId)
@@ -116,23 +118,32 @@ public class UsuarioService {
 
     }
 
-    public Usuario updateUsuario(Usuario usuario, Long userId) {
+    public Usuario updateUsuario(Usuario usuario, Long userId)  {
         if (existById(userId)) {
-            Usuario user = getById(userId);
-
+            Usuario user = getUsuarioLogado();
+                if (!(user.getId() == userId)) {
+                    throw new AccessDeniedException("Você não tem permissão para deletar esse usuario");
+                }
             user.setNome(usuario.getNome());
             user.setEmail(usuario.getEmail());
             user.setPassword(usuario.getPassword());
 
             return userRepo.save(user);
+
         } else {
             throw new ResourceNotFoundException("Não foi encontrado nenhum usuário com o id: " + userId);
         }
+
     }
 
-    public void deleteUsuario(Long userId) {
+    public void deleteUsuario(Long userId) throws AccessDeniedException {
         if (existById(userId)) {
+            Usuario user = getUsuarioLogado();
+            if (!(user.getId() == userId)) {
+                    throw new AccessDeniedException("Você não tem permissão para deletar esse usuario");
+                }
             userRepo.deleteById(userId);
+
         } else {
             throw new ResourceNotFoundException("Não foi encontrado nenhum usuário com o id: " + userId);
         }
