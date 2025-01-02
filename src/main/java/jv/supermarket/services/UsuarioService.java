@@ -14,7 +14,6 @@ import jakarta.transaction.Transactional;
 import jv.supermarket.entities.Carrinho;
 import jv.supermarket.entities.Role;
 import jv.supermarket.entities.Usuario;
-import jv.supermarket.entities.enums.PedidoStatus;
 import jv.supermarket.exceptions.AlreadyExistException;
 import jv.supermarket.exceptions.ResourceNotFoundException;
 import jv.supermarket.repositories.RoleRepository;
