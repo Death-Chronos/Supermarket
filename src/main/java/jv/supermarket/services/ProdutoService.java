@@ -106,8 +106,13 @@ public class ProdutoService {
         return pr.findByMarca(marca);
     }
 
-    public List<Produto> getProdutosByMarcaAndNome(String marca, String nome) {
-        return pr.findByMarcaAndNome(marca, nome);
+    public Produto getProdutoByMarcaAndNome(String marca, String nome) {
+        if (produtoExist(nome, marca)) {
+            return pr.findByMarcaAndNome(marca, nome);
+        }
+        
+        throw new ResourceNotFoundException(
+                    "Nenhum produto foi encontrado com a Marca: " + marca + " e o Nome: " + nome);
     }
 
     public List<ProdutoDTO> getProdutosByCategoriaNome(String nome) {

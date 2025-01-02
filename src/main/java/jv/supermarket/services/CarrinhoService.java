@@ -36,7 +36,7 @@ public class CarrinhoService {
     }
 
     public CarrinhoDTO getCarrinho(Long carrinhoId){
-        Carrinho carrinho = carrinhoRepo.findById(carrinhoId).orElseThrow(() -> new ResourceNotFoundException("Carrinho não encontrado com o Id:" + carrinhoId));
+        Carrinho carrinho = carrinhoRepo.findById(carrinhoId).orElseThrow(() -> new ResourceNotFoundException("Carrinho não encontrado com o Id:" + carrinhoId+". O usuário deve ser um Cliente para possuir um carrinho"));
         return convertToDTO(carrinho);
     }
 
