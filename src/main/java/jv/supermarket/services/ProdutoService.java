@@ -154,11 +154,7 @@ public class ProdutoService {
         }
         return pr.findByMarca(marca);
     }
-
-<<<<<<< Updated upstream
-    public List<Produto> getProdutosByMarcaAndNome(String marca, String nome) {
-        return pr.findByMarcaAndNome(marca, nome);
-=======
+        
     public Produto getProdutoByMarcaAndNome(String marca, String nome) {
         if (produtoExist(nome, marca)) {
             if (isCliente()) {
@@ -169,7 +165,6 @@ public class ProdutoService {
 
         throw new ResourceNotFoundException(
                 "Nenhum produto foi encontrado com a Marca: " + marca + " e o Nome: " + nome);
->>>>>>> Stashed changes
     }
 
     public List<Produto> getProdutosByCategoriaNome(String nome) {

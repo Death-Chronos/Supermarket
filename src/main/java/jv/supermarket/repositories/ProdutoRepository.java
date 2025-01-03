@@ -23,13 +23,9 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
     List<Produto> findByMarca(String marca);
 
-<<<<<<< Updated upstream
-    List<Produto> findByMarcaAndNome(String marca, String nome);
-=======
     List<Produto> findByMarcaAndDisponivel(String marca, boolean disponivel);
 
     Produto findByMarcaAndNome(String marca, String nome);
->>>>>>> Stashed changes
 
     Produto findByMarcaAndNomeAndDisponivel(String marca, String nome, boolean disponivel);
 
