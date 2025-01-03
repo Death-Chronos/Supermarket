@@ -54,7 +54,6 @@ public class WebSecurityConfig {
         String url_carrinho = "/supermarket/carrinho/";
         String url_pedido = "/supermarket/pedido/";
         String url_admin = "/supermarket/admin/";
-        String url_user = "/supermarket/usuario/";
         
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));  
         http.authorizeHttpRequests(authorize -> authorize
@@ -62,12 +61,6 @@ public class WebSecurityConfig {
                     .permitAll()
                 .requestMatchers(url_auth+"**")
                     .permitAll()
-                    .requestMatchers(
-                        "/v3/api-docs/**",   // Documentação JSON
-                        "/swagger-ui/**",    // Recursos Swagger UI
-                        "/swagger-ui.html",  // Página inicial do Swagger
-                        "/webjars/**"        // Recursos estáticos
-                    ).permitAll()
                 
                 .requestMatchers(HttpMethod.GET, url_produtos+"**")
                     .hasAnyRole("ADMIN", "FUNCIONARIO", "CLIENTE")
@@ -77,6 +70,8 @@ public class WebSecurityConfig {
                     .hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, url_produtos + "**")
                     .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, url_produtos+"{id:\\d+}/**")
+                    .hasAnyRole("ADMIN", "FUNCIONARIO")
                 
                 .requestMatchers(HttpMethod.POST, url_categorias + "save")
                     .hasRole("ADMIN")
@@ -119,14 +114,7 @@ public class WebSecurityConfig {
                     .hasRole("CLIENTE")
                     
                 .requestMatchers(HttpMethod.POST, url_admin+"criarFuncionario")
-                    .hasRole("ADMIN")
-                    
-                .requestMatchers(HttpMethod.GET, url_user+"**")
-                    .hasAnyRole("ADMIN", "CLIENTE")
-                .requestMatchers(HttpMethod.PUT, url_user+"**")
-                    .hasRole("CLIENTE")
-                .requestMatchers(HttpMethod.DELETE, url_user+"**")
-                    .hasRole("CLIENTE"));
+                    .hasRole("ADMIN"));
                 
 
 

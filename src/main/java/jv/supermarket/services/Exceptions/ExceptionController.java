@@ -107,6 +107,15 @@ public class ExceptionController {
         Mensagem mensagem = new Mensagem(Instant.now(), status.value(), erro, request.getRequestURI(), detalhes);
         return ResponseEntity.status(status).body(mensagem);
     }
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Mensagem> redundanciaAoMudarDisponibilidade(IllegalStateException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.CONFLICT;
+        String erro = "Mudança desnecessária de estado";
+        ArrayList<String> detalhes = new ArrayList<String>();
+        detalhes.add(e.getMessage());
+        Mensagem mensagem = new Mensagem(Instant.now(), status.value(), erro, request.getRequestURI(), detalhes);
+        return ResponseEntity.status(status).body(mensagem);
+    }
 
     
 }

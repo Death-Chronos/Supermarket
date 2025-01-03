@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -11,6 +12,7 @@ import jv.supermarket.DTOs.ProdutoDTO;
 import jv.supermarket.DTOs.request.ProdutoRequestDTO;
 import jv.supermarket.entities.Categoria;
 import jv.supermarket.entities.Produto;
+import jv.supermarket.entities.Usuario;
 import jv.supermarket.exceptions.AlreadyExistException;
 import jv.supermarket.exceptions.ResourceNotFoundException;
 import jv.supermarket.repositories.CategoriaRepository;
@@ -25,11 +27,17 @@ public class ProdutoService {
     @Autowired
     CategoriaRepository cr;
 
+    @Autowired
+    UsuarioService userService;
+
     private Boolean produtoExist(String nome, String marca) {
         return pr.existsByNomeAndMarca(nome, marca);
     }
 
     public List<Produto> getAllProdutos() {
+        if (isCliente()) {
+            pr.findAllByDisponivel(true);
+        }
         return pr.findAll();
     }
 
@@ -47,7 +55,7 @@ public class ProdutoService {
     }
 
     public Produto addCategoriasEmProduto(Produto produto, List<String> categorias) {
-        for (String categoriaNome :categorias) {
+        for (String categoriaNome : categorias) {
             if (cr.existsByNome(categoriaNome)) {
                 Categoria categoria = cr.findByNome(categoriaNome);
                 produto.getCategorias().add(categoria);
@@ -59,6 +67,9 @@ public class ProdutoService {
     }
 
     public Produto getProdutoById(Long id) {
+        // if (isCliente()) {
+        // return pr.findByIdAndDisponivel(id, true);
+        // }
         return pr.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto com o id: " + id + " não encontrado"));
     }
@@ -81,11 +92,43 @@ public class ProdutoService {
 
     public void deleteProdutoById(Long id) {
         if (pr.existsById(id)) {
-            pr.deleteById(id);
+            try {
+                pr.deleteById(id);
+            } catch (DataIntegrityViolationException e) {
+                tornarIndisponivel(id);
+            }
+
         } else {
             throw new ResourceNotFoundException("Produto com o id: " + id + " não encontrado");
         }
 
+    }
+
+    public void tornarIndisponivel(Long id) {
+        if (pr.existsById(id)) {
+            Produto produto = pr.findById(id).get();
+            if (!produto.isDisponivel()) {
+                throw new IllegalStateException("O produto já estava como indisponivel previamente.");
+            }
+            produto.setDisponivel(false);
+            pr.save(produto);
+        }else{
+            throw new ResourceNotFoundException("Produto com o id: " + id + " não encontrado");
+        }
+    }
+    public void tornarDisponivel(Long id) {
+        if (pr.existsById(id)) {
+            Produto produto = pr.findById(id).get();
+            if (produto.isDisponivel()) {
+                throw new IllegalStateException("O produto já estava como disponivel previamente.");
+            }
+            
+            produto.setDisponivel(true);
+            pr.save(produto);
+        }else{
+            throw new ResourceNotFoundException("Produto com o id: " + id + " não encontrado");
+        }
+        
     }
 
     public Produto addProdutoEstoque(int quantidade, Long id) {
@@ -99,29 +142,50 @@ public class ProdutoService {
     }
 
     public List<Produto> getProdutosByNome(String nome) {
+        if (isCliente()) {
+            pr.findByNomeAndDisponivel(nome, true);
+        }
         return pr.findByNome(nome);
     }
 
     public List<Produto> getProdutosByMarca(String marca) {
+        if (isCliente()) {
+            return pr.findByMarcaAndDisponivel(marca, true);
+        }
         return pr.findByMarca(marca);
     }
 
+<<<<<<< Updated upstream
+    public List<Produto> getProdutosByMarcaAndNome(String marca, String nome) {
+        return pr.findByMarcaAndNome(marca, nome);
+=======
     public Produto getProdutoByMarcaAndNome(String marca, String nome) {
         if (produtoExist(nome, marca)) {
+            if (isCliente()) {
+                return pr.findByMarcaAndNomeAndDisponivel(marca, nome, true);
+            }
             return pr.findByMarcaAndNome(marca, nome);
         }
-        
+
         throw new ResourceNotFoundException(
-                    "Nenhum produto foi encontrado com a Marca: " + marca + " e o Nome: " + nome);
+                "Nenhum produto foi encontrado com a Marca: " + marca + " e o Nome: " + nome);
+>>>>>>> Stashed changes
     }
 
-    public List<ProdutoDTO> getProdutosByCategoriaNome(String nome) {
+    public List<Produto> getProdutosByCategoriaNome(String nome) {
+
         if (cr.existsByNome(nome)) {
-            List<Produto> produtos = pr.findByCategoriaNome(nome);
+            List<Produto> produtos;
+            if (isCliente()) {
+                produtos = pr.findByCategoriaNomeAndDisponivel(nome, true);
+            } else {
+                produtos = pr.findByCategoriaNome(nome);
+            }
+
             if (produtos.isEmpty()) {
                 throw new ResourceNotFoundException("Não existem produtos pertencentes a categoria com o nome:" + nome);
             }
-            return produtos.stream().map(produto -> converterParaDTO(produto)).toList();
+            return produtos;
         }
         throw new ResourceNotFoundException("A categoria com o nome: " + nome + " não foi encontrada");
 
@@ -137,6 +201,13 @@ public class ProdutoService {
 
     public boolean existById(Long produtoId) {
         return pr.existsById(produtoId);
+    }
+
+    private boolean isCliente() {
+        Usuario user = userService.getUsuarioLogado();
+        boolean isCliente = user.getRoles().stream()
+                .anyMatch(role -> role.getNome().equals("ROLE_CLIENTE"));
+        return isCliente;
     }
 
 }

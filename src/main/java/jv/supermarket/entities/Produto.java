@@ -37,6 +37,7 @@ public class Produto {
     private int estoque;
     @NotNull
     private String descricao;
+    private Boolean disponivel = true;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "produto_categoria", joinColumns = @JoinColumn(name = "produto_id"), inverseJoinColumns = @JoinColumn(name = "categoria_id"))
@@ -48,12 +49,15 @@ public class Produto {
     public Produto() {
     }
 
-    public Produto(String nome, String marca, BigDecimal preco, int estoque, String descricao) {
+    public Produto(String nome, String marca, BigDecimal preco, int estoque, String descricao,
+            Set<Categoria> categorias, List<Imagem> imagens) {
         this.nome = nome;
         this.marca = marca;
         this.preco = preco;
         this.estoque = estoque;
         this.descricao = descricao;
+        this.disponivel = true;
+        this.categorias = categorias;
         this.imagens = new ArrayList<>();
     }
 
@@ -61,6 +65,7 @@ public class Produto {
         this.categorias.add(categoria);
         categoria.getProdutos().add(this);
     }
+
     public Set<Categoria> getCategorias() {
         return this.categorias;
     }
@@ -113,6 +118,19 @@ public class Produto {
         this.descricao = descricao;
     }
 
+
+    public Boolean isDisponivel() {
+        return disponivel;
+    }
+
+    public List<Imagem> getImagens() {
+        return imagens;
+    }
+
+    public void setDisponivel(Boolean disponivel) {
+        this.disponivel = disponivel;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -149,7 +167,5 @@ public class Produto {
             return false;
         return true;
     }
-
-    
 
 }
