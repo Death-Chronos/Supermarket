@@ -34,7 +34,7 @@ O console H2 pode ser acessado em: http://localhost:8080/h2-console
 2. **MySQL (dev)**
     Configuração no arquivo `application-dev.properties`:
     
-    ```
+    ```properties
     spring.datasource.url=jdbc:mysql://localhost:3306/supermarket
     spring.datasource.username=[seuUsername]
     spring.datasource.password=[suaSenha]
@@ -46,7 +46,7 @@ O console H2 pode ser acessado em: http://localhost:8080/h2-console
 3. **Ativando um Perfil**
 O perfil ativo é definido no arquivo `application.properties`:
     
-    ```
+    ```properties
     spring.profiles.active=test
     ```
     Altere para dev se quiser usar o MySQL.
@@ -57,7 +57,7 @@ http://localhost:8080/swagger-ui.html
 
 Nota:No arquivo WebSecurityConfig, as URLs do Swagger já estão liberadas:
 
-```
+```java
 http.authorizeHttpRequests(authorize -> authorize
     .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
         .permitAll());
@@ -65,7 +65,7 @@ http.authorizeHttpRequests(authorize -> authorize
 ### Configuração de Upload de Arquivos
 A aplicação suporta upload de arquivos com tamanho máximo configurado em `application.properties`:
 
-```
+```properties
 spring.servlet.multipart.max-file-size = 8MB
 ```
 Tamanho máximo: 8 MB
@@ -74,7 +74,7 @@ Tamanho máximo: 8 MB
 
 Inicie a aplicação:
 
-```
+```bash
 ./mvnw spring-boot:run
 ```
 Acesse o Swagger para explorar os endpoints: http://localhost:8080/swagger-ui.html
