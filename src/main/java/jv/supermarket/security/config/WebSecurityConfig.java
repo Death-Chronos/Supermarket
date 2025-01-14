@@ -1,5 +1,7 @@
 package jv.supermarket.security.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,8 +17,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import jv.supermarket.security.CustomUserDetailsService;
 import jv.supermarket.security.filters.FilterTokenJWT;
@@ -46,14 +48,17 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    public CorsConfigurationSource corsConf() {
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOrigin("http://localhost:5173"); // Domínio do frontend
         config.addAllowedHeader("*");
+        config.setExposedHeaders(List.of("Authorization", "Content-Type"));
         config.addAllowedMethod("*");
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
+        config.setAllowCredentials(true);
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config); // Aplica CORS em todas as rotas
+        return source;
     }
 
     @Autowired
@@ -146,6 +151,8 @@ public class WebSecurityConfig {
                 .frameOptions(Customizer.withDefaults()).disable());
 
         http.csrf(csrf -> csrf.disable());
+
+        http.cors(cors -> cors.configurationSource(corsConf()));
 
         http.userDetailsService(userDetailsService());
 
