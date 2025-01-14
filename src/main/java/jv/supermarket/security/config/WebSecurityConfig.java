@@ -14,6 +14,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import jv.supermarket.security.CustomUserDetailsService;
 import jv.supermarket.security.filters.FilterTokenJWT;
@@ -42,6 +45,17 @@ public class WebSecurityConfig {
         return new ProviderManager(provider);
     }
 
+    @Bean
+    CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("http://localhost:5173"); // Domínio do frontend
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
+
     @Autowired
     FilterTokenJWT filterToken;
 
@@ -54,8 +68,9 @@ public class WebSecurityConfig {
         String url_carrinho = "/supermarket/carrinho/";
         String url_pedido = "/supermarket/pedido/";
         String url_admin = "/supermarket/admin/";
-        
-        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));  
+
+        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        //@formatter:off
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/h2-console/**")
                     .permitAll()
@@ -121,13 +136,12 @@ public class WebSecurityConfig {
                     
                 .requestMatchers(HttpMethod.POST, url_admin+"criarFuncionario")
                     .hasRole("ADMIN"));
-                
-
+            //@formatter:on
 
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        
+
         http.addFilterBefore(filterToken, UsernamePasswordAuthenticationFilter.class);
-        
+
         http.headers(header -> header
                 .frameOptions(Customizer.withDefaults()).disable());
 
