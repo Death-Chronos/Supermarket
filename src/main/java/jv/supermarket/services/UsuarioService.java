@@ -39,7 +39,7 @@ public class UsuarioService {
         if (existsByEmail(usuario.getEmail())) {
             throw new AlreadyExistException("Já existe um usuário com este email");
         }
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
 
         Role role = roleRepo.findByNome("ROLE_CLIENTE");
         usuario.getRoles().add(role);
@@ -59,7 +59,7 @@ public class UsuarioService {
         if (existsByEmail(usuario.getEmail())) {
             throw new AlreadyExistException("Já existe um usuário com este email");
         }
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
 
         Role role = roleRepo.findByNome("ROLE_ADMIN");
         usuario.getRoles().add(role);
@@ -73,7 +73,7 @@ public class UsuarioService {
         if (existsByEmail(usuario.getEmail())) {
             throw new AlreadyExistException("Já existe um usuário com este email");
         }
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
 
         Role role = roleRepo.findByNome("ROLE_FUNCIONARIO");
         usuario.getRoles().add(role);
@@ -123,7 +123,7 @@ public class UsuarioService {
 
             user.setNome(usuario.getNome());
             user.setEmail(usuario.getEmail());
-            user.setPassword(usuario.getPassword());
+            user.setSenha(usuario.getSenha());
 
             return userRepo.save(user);
         } else {

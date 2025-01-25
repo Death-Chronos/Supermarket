@@ -49,7 +49,7 @@ public class InicializadorConfigRoles implements CommandLineRunner {
             Usuario admin = new Usuario();
             admin.setNome("Administrador");
             admin.setEmail(email);
-            admin.setPassword("123456");
+            admin.setSenha("123456");
 
             usuarioService.saveAdmin(admin);
             System.out.println("Administrador padrão criado: " + email);

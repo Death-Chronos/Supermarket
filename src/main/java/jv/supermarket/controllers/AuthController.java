@@ -51,7 +51,7 @@ public class AuthController {
     public ResponseEntity<AuthResponseDTO> login(@RequestBody @Valid AuthLoginRequestDTO dto) {
         Usuario user = userService.getByEmail(dto.email());
 
-        if (passwordEncoder.matches(dto.senha(), user.getPassword())) {
+        if (passwordEncoder.matches(dto.senha(), user.getSenha())) {
             String token = tokenService.gerarToken(user);
 
             return ResponseEntity.status(HttpStatus.OK).body(new AuthResponseDTO(user.getNome(), token));
@@ -72,7 +72,7 @@ public class AuthController {
                 schema = @Schema(implementation = Mensagem.class)))
     })
     @PostMapping("/registrar")
-    public ResponseEntity<AuthResponseDTO> saveUsuario(@RequestBody @Valid Usuario user){
+    public ResponseEntity<AuthResponseDTO> saveCliente(@RequestBody @Valid Usuario user){
         Usuario usuario = userService.saveCliente(user);
         String token = tokenService.gerarToken(usuario);
         return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponseDTO(usuario.getNome(),token));

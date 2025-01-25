@@ -33,7 +33,7 @@ public class Usuario {
     @NotBlank(message = "O email deve ser informado")
     private String email;
     @NotBlank(message = "A senha deve ser informada")
-    private String password;
+    private String senha;
 
     //Não esqueça do Fetch EAGER(e de sempre olhar o console)
     @ManyToMany(fetch = FetchType.EAGER)
@@ -48,20 +48,20 @@ public class Usuario {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Pedido> pedidos = new HashSet<Pedido>();
 
-    public Usuario(String nome, String email, String password, Carrinho carrinho) {
+    public Usuario(String nome, String email, String senha, Carrinho carrinho) {
         this.nome = nome;
         this.email = email;
-        this.password = password;
+        this.senha = senha;
         this.carrinho = carrinho;
     }
 
     public Usuario() {
     }
 
-    public Usuario(String nome, String email, String password) {
+    public Usuario(String nome, String email, String senha) {
         this.nome = nome;
         this.email = email;
-        this.password = password;
+        this.senha = senha;
     }
 
     public Long getId() {
@@ -88,12 +88,12 @@ public class Usuario {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public String getSenha() {
+        return senha;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 
     public Set<Role> getRoles() {
