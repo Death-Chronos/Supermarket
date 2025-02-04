@@ -143,16 +143,16 @@ public class ProdutoService {
 
     public List<Produto> getProdutosByNome(String nome) {
         if (isCliente()) {
-            pr.findByNomeAndDisponivel(nome, true);
+            pr.findByNomeContainingIgnoreCaseAndDisponivel(nome, true);
         }
-        return pr.findByNome(nome);
+        return pr.findByNomeContainingIgnoreCase(nome);
     }
 
     public List<Produto> getProdutosByMarca(String marca) {
         if (isCliente()) {
-            return pr.findByMarcaAndDisponivel(marca, true);
+            return pr.findByMarcaContainingIgnoreCaseAndDisponivel(marca, true);
         }
-        return pr.findByMarca(marca);
+        return pr.findByMarcaContainingIgnoreCase(marca);
     }
         
     public Produto getProdutoByMarcaAndNome(String marca, String nome) {
@@ -172,9 +172,9 @@ public class ProdutoService {
         if (cr.existsByNome(nome)) {
             List<Produto> produtos;
             if (isCliente()) {
-                produtos = pr.findByCategoriaNomeAndDisponivel(nome, true);
+                produtos = pr.findByCategoriaNomeContainingIgnoreCaseAndDisponivel(nome, true);
             } else {
-                produtos = pr.findByCategoriaNome(nome);
+                produtos = pr.findByCategoriaNomeContainingIgnoreCase(nome);
             }
 
             if (produtos.isEmpty()) {
