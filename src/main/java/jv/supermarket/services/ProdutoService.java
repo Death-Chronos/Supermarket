@@ -169,20 +169,17 @@ public class ProdutoService {
 
     public List<Produto> getProdutosByCategoriaNome(String nome) {
 
-        if (cr.existsByNome(nome)) {
             List<Produto> produtos;
             if (isCliente()) {
-                produtos = pr.findByCategoriaNomeContainingIgnoreCaseAndDisponivel(nome, true);
+                produtos = pr.findByCategoriaNomeContainingAndDisponivel(nome);
             } else {
-                produtos = pr.findByCategoriaNomeContainingIgnoreCase(nome);
+                produtos = pr.findByCategoriaNomeContaining(nome);
             }
 
             if (produtos.isEmpty()) {
                 throw new ResourceNotFoundException("Não existem produtos pertencentes a categoria com o nome:" + nome);
             }
             return produtos;
-        }
-        throw new ResourceNotFoundException("A categoria com o nome: " + nome + " não foi encontrada");
 
     }
 

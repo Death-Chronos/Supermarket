@@ -44,10 +44,13 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
     List<Produto> findByMarcaContainingIgnoreCaseAndDisponivel(String marca, boolean disponivel);
 
-    @Query("SELECT p FROM Produto p JOIN FETCH p.categorias c WHERE LOWER(c.nome) LIKE LOWER(:nome)")
-    List<Produto> findByCategoriaNomeContainingIgnoreCase(@Param("nome") String nome);
+    @Query("SELECT DISTINCT p FROM Produto p JOIN p.categorias c " +
+        "WHERE LOWER(c.nome) LIKE LOWER(CONCAT('%', :nome, '%')) ")    
+    List<Produto> findByCategoriaNomeContaining(@Param("nome") String nome);
 
-    @Query("SELECT p FROM Produto p JOIN FETCH p.categorias c WHERE LOWER(c.nome) LIKE LOWER(:nome) AND p.disponivel = :disponivel")
-    List<Produto> findByCategoriaNomeContainingIgnoreCaseAndDisponivel(@Param("nome") String nome, @Param("disponivel") boolean disponivel);
+    @Query("SELECT DISTINCT p FROM Produto p JOIN p.categorias c " +
+       "WHERE LOWER(c.nome) LIKE LOWER(CONCAT('%', :nome, '%')) " +
+       "AND p.disponivel = true")
+    List<Produto> findByCategoriaNomeContainingAndDisponivel(@Param("nome") String nome);
 
 }
