@@ -81,6 +81,7 @@ Acesse o Swagger para explorar os endpoints: http://localhost:8080/swagger-ui.ht
 
 ### Configuração de Segurança
 A autenticação e autorização são implementadas com JWT. O segredo do token está definido no arquivo `application.properties`.
+O admin padrão usa admin@gmail.com como login e 123456 como senha.
 
 
 ### Contato
