@@ -53,17 +53,17 @@ public class PedidoService {
 
     @Transactional
     public Pedido createPedido() {
-        Usuario user = userService.getUsuarioLogado();
-        Carrinho carrinho = carrinhoService.getById(user.getId());
+        Usuario user = userService.getLoggedUsuario();
+        Carrinho carrinho = carrinhoService.getCarrinhoById(user.getId());
         if (carrinho.getItens().isEmpty()) {
             throw new ResourceNotFoundException(
                     "Carrinho vazio. Adicione itens a ele primeiro antes de tentar realizar um pedido");
         }
 
-        verificarEstoqueCarrinho(carrinho);
+        checkEstoqueCarrinho(carrinho);
         Pedido pedido = new Pedido();
 
-        Set<PedidoItem> itens = carrinhoItemsToPedidoItems(carrinho.getItens());
+        Set<PedidoItem> itens = convertCarrinhoItensToPedidoItens(carrinho.getItens());
 
         for (PedidoItem pedidoItem : itens) {
             pedido.addItem(pedidoItem);
@@ -72,7 +72,7 @@ public class PedidoService {
         pedido.setStatus(PedidoStatus.ESPERANDO_PAGAMENTO);
         pedido.setData(LocalDateTime.now());
 
-        carrinhoService.limparCarrinho(carrinho.getId());
+        carrinhoService.clearCarrinho(carrinho.getId());
 
         return pedidoRepo.save(pedido);
 
@@ -80,8 +80,8 @@ public class PedidoService {
 
     @Transactional
     public PedidoDTO getPedido(Long id) {
-        Usuario user = userService.getUsuarioLogado();
-        Pedido pedido = getById(id);
+        Usuario user = userService.getLoggedUsuario();
+        Pedido pedido = getPedidoById(id);
 
         for (Role role : user.getRoles()) {
             if (role.getNome().equals("ROLE_ADMIN")) {
@@ -98,7 +98,7 @@ public class PedidoService {
     }
 
     public Set<PedidoDTO> getPedidosByUsuario() {
-        Set<Pedido> pedidos = pedidoRepo.findByUserId(userService.getUsuarioLogado().getId());
+        Set<Pedido> pedidos = pedidoRepo.findByUserId(userService.getLoggedUsuario().getId());
         if (pedidos == null || pedidos.size() == 0) {
             throw new ResourceNotFoundException("O usuário não possui nenhum pedido");
         }
@@ -107,14 +107,14 @@ public class PedidoService {
                 .collect(Collectors.toSet());
     }
 
-    public Pedido getById(Long id) {
+    public Pedido getPedidoById(Long id) {
         return pedidoRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado com o Id: " + id));
     }
 
-    public Pedido cancelarPedido(Long pedidoId) {
-        Usuario user = userService.getUsuarioLogado();
-        Pedido pedido = getById(pedidoId);
+    public Pedido cancelPedido(Long pedidoId) {
+        Usuario user = userService.getLoggedUsuario();
+        Pedido pedido = getPedidoById(pedidoId);
 
         for (Role role : user.getRoles()) {
             if (role.getNome().equals("ROLE_ADMIN")) {
@@ -131,11 +131,11 @@ public class PedidoService {
 
     }
 
-    private void verificarEstoqueCarrinho(Carrinho carrinho) {
+    private void checkEstoqueCarrinho(Carrinho carrinho) {
         for (CarrinhoItem item : carrinho.getItens()) {
             Produto produto = item.getProduto();
             int estoqueDisponivel = produto.getEstoque();
-            if (!isEstoqueSuficiente(item.getQuantidade(), estoqueDisponivel)) {
+            if (!isSufficientEstoque(item.getQuantidade(), estoqueDisponivel)) {
                 int quantidadeExcedente = item.getQuantidade() - estoqueDisponivel;
                 throw new OutOfStockException(
                         "O pedido do produto " + produto.getNome() + " da marca: " + produto.getMarca()
@@ -146,7 +146,7 @@ public class PedidoService {
 
     }
 
-    private Set<PedidoItem> carrinhoItemsToPedidoItems(Set<CarrinhoItem> CarItens) {
+    private Set<PedidoItem> convertCarrinhoItensToPedidoItens(Set<CarrinhoItem> CarItens) {
         Set<PedidoItem> itens = new HashSet<PedidoItem>();
 
         for (CarrinhoItem carItem : CarItens) {
@@ -165,14 +165,14 @@ public class PedidoService {
         return itens;
     }
 
-    private boolean isEstoqueSuficiente(int quantidade, int produtoEstoque) {
+    private boolean isSufficientEstoque(int quantidade, int produtoEstoque) {
         return quantidade <= produtoEstoque;
     }
 
     private PedidoItemDTO convertItemToDTO(PedidoItem item) {
         PedidoItemDTO dto = new PedidoItemDTO();
 
-        dto.setProduto(produtoService.converterParaDTO(item.getProduto()));
+        dto.setProduto(produtoService.convertToDTO(item.getProduto()));
         dto.setQuantidade(item.getQuantidade());
         dto.setPrecoTotal(item.getPrecoTotal());
 

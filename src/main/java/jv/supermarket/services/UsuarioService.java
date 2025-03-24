@@ -89,7 +89,7 @@ public class UsuarioService {
         return usuario;
     }
 
-    public Usuario getUsuarioLogado() {
+    public Usuario getLoggedUsuario() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
             Object principal = auth.getPrincipal();

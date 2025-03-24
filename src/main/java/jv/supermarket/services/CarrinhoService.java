@@ -30,7 +30,7 @@ public class CarrinhoService {
         return carrinhoRepo.save(carrinho);
     }
 
-    public Carrinho getById(Long carrinhoId) {
+    public Carrinho getCarrinhoById(Long carrinhoId) {
         return carrinhoRepo.findById(carrinhoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Carrinho não encontrado com o Id:" + carrinhoId));
     }
@@ -41,20 +41,20 @@ public class CarrinhoService {
     }
 
     @Transactional
-    public void limparCarrinho(Long carrinhoId){
+    public void clearCarrinho(Long carrinhoId){
         Carrinho carrinho = carrinhoRepo.findById(carrinhoId).orElseThrow(() -> new ResourceNotFoundException("Carrinho não encontrado com o Id:" + carrinhoId));
         itemRepo.deleteAllByCarrinhoId(carrinhoId);
         carrinho.limparCarrinho();
     }
 
-    public boolean existById(Long carrinhoId) {
+    public boolean existsById(Long carrinhoId) {
         return carrinhoRepo.existsById(carrinhoId);
     }
 
     public CarrinhoItemDTO convertItemToDTO(CarrinhoItem item){
         CarrinhoItemDTO dto = new CarrinhoItemDTO();
 
-        dto.setProduto(produtoService.converterParaDTO(item.getProduto()));
+        dto.setProduto(produtoService.convertToDTO(item.getProduto()));
         dto.setPrecoTotal(item.getPrecoTotal());
         dto.setQuantidade(item.getQuantidade());
 

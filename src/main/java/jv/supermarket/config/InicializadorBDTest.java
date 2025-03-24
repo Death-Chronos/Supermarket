@@ -79,11 +79,11 @@ public class InicializadorBDTest implements CommandLineRunner {
         Produto p4 = produtoService.saveProduto(new ProdutoRequestDTO("Cama de Casal", "Plumatex", new BigDecimal(1500),
                 5, "O que há de conforto para você", Arrays.asList("Mobília")));
 
-        Carrinho carrinho = carrinhoService.getById(cliente.getId());
+        Carrinho carrinho = carrinhoService.getCarrinhoById(cliente.getId());
 
-        itemService.adicionarItemNoCarrinho(p1.getId(), 2, carrinho.getId());
-        itemService.adicionarItemNoCarrinho(p4.getId(), 1, carrinho.getId());
-        itemService.removerItemDoCarrinho(carrinho.getId(), p4.getId());
+        itemService.addItemInCarrinho(p1.getId(), 2, carrinho.getId());
+        itemService.addItemInCarrinho(p4.getId(), 1, carrinho.getId());
+        itemService.removeItemOfCarrinho(carrinho.getId(), p4.getId());
         itemService.updateItemQuantidade(carrinho.getId(), p1.getId(), 3);
 
 

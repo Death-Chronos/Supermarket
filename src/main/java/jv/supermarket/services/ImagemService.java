@@ -71,7 +71,7 @@ public class ImagemService {
         return imagensSalvas;
     }
 
-    public void updateImage(MultipartFile file, Long imagemId) {
+    public void updateImagem(MultipartFile file, Long imagemId) {
         Imagem imagem = getImagemById(imagemId);
         try {
             imagem.setNomeArquivo(file.getOriginalFilename());
@@ -84,7 +84,7 @@ public class ImagemService {
 
     }
 
-    public void deleteImage(Long imagemId) {
+    public void deleteImagem(Long imagemId) {
         if (ir.existsById(imagemId)) {
             ir.deleteById(imagemId);
         }else{

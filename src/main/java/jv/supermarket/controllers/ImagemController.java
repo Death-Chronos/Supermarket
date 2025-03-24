@@ -114,7 +114,7 @@ public class ImagemController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<Imagem> updateImage(@Parameter(description = "Id da imagem a ser atualizada") @PathVariable Long id, @RequestParam MultipartFile arquivos){
-        is.updateImage(arquivos, id);
+        is.updateImagem(arquivos, id);
         return ResponseEntity.status(HttpStatus.OK).body(is.getImagemById(id));
     }
 
@@ -131,7 +131,7 @@ public class ImagemController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<RespostaAPI> deleteImage(@PathVariable Long id){
-        is.deleteImage(id);
+        is.deleteImagem(id);
         return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),"Imagem deletada com sucesso"));
     }
 

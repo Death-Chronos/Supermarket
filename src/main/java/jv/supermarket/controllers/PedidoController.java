@@ -49,7 +49,7 @@ public class PedidoController {
                 schema = @Schema(implementation = Mensagem.class)))
     })
     @PostMapping("/criar")
-    public ResponseEntity<Pedido> criarPedido() {
+    public ResponseEntity<Pedido> createPedido() {
         return ResponseEntity.status(HttpStatus.CREATED).body(pedidoService.createPedido());
     }
 
@@ -105,8 +105,8 @@ public class PedidoController {
                 schema = @Schema(implementation = Mensagem.class)))
     })
     @DeleteMapping("/{id}/cancelar")
-    public ResponseEntity<RespostaAPI> cancelarPedido(@Parameter(description = "Id do pedido") @PathVariable(name = "id") Long pedidoId) {
-        pedidoService.cancelarPedido(pedidoId);
+    public ResponseEntity<RespostaAPI> cancelPedido(@Parameter(description = "Id do pedido") @PathVariable(name = "id") Long pedidoId) {
+        pedidoService.cancelPedido(pedidoId);
         return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(), "Pedido cancelado com sucesso."));
     }
 }

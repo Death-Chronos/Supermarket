@@ -180,7 +180,7 @@ public class ProdutoController {
             @ApiResponse(responseCode = "409", description = "Produto já estava disponivel previamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Mensagem.class)))
     })
     @PutMapping("/{id}/disponibilizar")
-    public ResponseEntity<RespostaAPI> disponibilizarProduto(@PathVariable Long id) {
+    public ResponseEntity<RespostaAPI> makeProdutoAvaliable(@PathVariable Long id) {
         produtoService.tornarDisponivel(id);
         return ResponseEntity.ok(new RespostaAPI(Instant.now(), "Produto disponibilizado com sucesso."));
     }
@@ -192,7 +192,7 @@ public class ProdutoController {
             @ApiResponse(responseCode = "409", description = "Produto já estava indisponivel previamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Mensagem.class)))
     })
     @PutMapping("/{id}/indisponibilizar")
-    public ResponseEntity<RespostaAPI> indisponibilizarProduto(@PathVariable Long id) {
+    public ResponseEntity<RespostaAPI> makeProdutoUnavaliable(@PathVariable Long id) {
         produtoService.tornarIndisponivel(id);
         return ResponseEntity.ok(new RespostaAPI(Instant.now(), "Produto indisponibilizado com sucesso."));
     }
@@ -203,7 +203,7 @@ public class ProdutoController {
             @ApiResponse(responseCode = "404", description = "Nenhum produto foi encontrado com o id informado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Mensagem.class)))
     })
     @PutMapping("/{id}/addEstoque")
-    public ResponseEntity<Produto> aumentarEstoque(@PathVariable Long id,
+    public ResponseEntity<Produto> increaseEstoque(@PathVariable Long id,
             @Parameter(description = "Quantidade a somar no estoque do produto") @RequestParam int quantidade) {
  
         return ResponseEntity.status(HttpStatus.OK).body(produtoService.addProdutoEstoque(quantidade, id));

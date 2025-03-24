@@ -103,7 +103,7 @@ public class ProdutoService {
         }
 
     }
-
+    
     public void tornarIndisponivel(Long id) {
         if (pr.existsById(id)) {
             Produto produto = pr.findById(id).get();
@@ -183,7 +183,7 @@ public class ProdutoService {
 
     }
 
-    public ProdutoDTO converterParaDTO(Produto produto) {
+    public ProdutoDTO convertToDTO(Produto produto) {
         ProdutoDTO produtoDTO = new ProdutoDTO();
 
         BeanUtils.copyProperties(produto, produtoDTO);
@@ -196,7 +196,7 @@ public class ProdutoService {
     }
 
     private boolean isCliente() {
-        Usuario user = userService.getUsuarioLogado();
+        Usuario user = userService.getLoggedUsuario();
         boolean isCliente = user.getRoles().stream()
                 .anyMatch(role -> role.getNome().equals("ROLE_CLIENTE"));
         return isCliente;

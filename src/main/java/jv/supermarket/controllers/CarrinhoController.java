@@ -54,8 +54,8 @@ public class CarrinhoController {
                 schema = @Schema(implementation = Mensagem.class)))
     })
     @GetMapping("/show")
-    public ResponseEntity<CarrinhoDTO> mostrarCarrinho() {
-        Usuario user = usuarioService.getUsuarioLogado();
+    public ResponseEntity<CarrinhoDTO> showCarrinho() {
+        Usuario user = usuarioService.getLoggedUsuario();
 
         return ResponseEntity.status(HttpStatus.OK).body(carrinhoService.getCarrinho(user.getId()));
     }
@@ -80,9 +80,9 @@ public class CarrinhoController {
                 schema = @Schema(implementation = Mensagem.class)))
     })
     @PostMapping("/addItem/{itemId}")
-    public ResponseEntity<RespostaAPI> adicionarItem(@Parameter(description = "Id do produto a ser adicionado") @PathVariable Long itemId, @Parameter(description = "Quantidade do produto a ser adicionado") @RequestParam int quantidade) {
-        Usuario user = usuarioService.getUsuarioLogado();
-        ItemService.adicionarItemNoCarrinho(itemId, quantidade, user.getId());
+    public ResponseEntity<RespostaAPI> addItem(@Parameter(description = "Id do produto a ser adicionado") @PathVariable Long itemId, @Parameter(description = "Quantidade do produto a ser adicionado") @RequestParam int quantidade) {
+        Usuario user = usuarioService.getLoggedUsuario();
+        ItemService.addItemInCarrinho(itemId, quantidade, user.getId());
         return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),
                 "Item de id: " + itemId + " adicionado no carrinho com id: " + user.getId() + " com sucesso."));
     }
@@ -103,9 +103,9 @@ public class CarrinhoController {
                 schema = @Schema(implementation = Mensagem.class)))
     })
     @DeleteMapping("/removeItem/{itemId}")
-    public ResponseEntity<RespostaAPI> removerItem(@PathVariable Long itemId) {
-        Usuario user = usuarioService.getUsuarioLogado();
-        ItemService.removerItemDoCarrinho(user.getId(), itemId);
+    public ResponseEntity<RespostaAPI> removeItem(@PathVariable Long itemId) {
+        Usuario user = usuarioService.getLoggedUsuario();
+        ItemService.removeItemOfCarrinho(user.getId(), itemId);
         return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),
                 "Item de id: " + itemId + " removido do carrinho com id: " + user.getId() + " com sucesso."));
     }
@@ -131,7 +131,7 @@ public class CarrinhoController {
     })
     @PutMapping("/item/{itemId}/update")
     public ResponseEntity<RespostaAPI> updateItemQuantidade(@PathVariable Long itemId, @RequestParam int quantidade) {
-        Usuario user = usuarioService.getUsuarioLogado();
+        Usuario user = usuarioService.getLoggedUsuario();
         System.out.println("ID do usuario: " + user.getId());
         ItemService.updateItemQuantidade(user.getId(), itemId, quantidade);
         return ResponseEntity.status(HttpStatus.OK).body(new RespostaAPI(Instant.now(),
@@ -150,9 +150,9 @@ public class CarrinhoController {
                 schema = @Schema(implementation = Mensagem.class)))
     })
     @DeleteMapping("/clear")
-    public ResponseEntity<RespostaAPI> limparCarrinho() {
-        Usuario user = usuarioService.getUsuarioLogado();
-        carrinhoService.limparCarrinho(user.getId());
+    public ResponseEntity<RespostaAPI> clearCarrinho() {
+        Usuario user = usuarioService.getLoggedUsuario();
+        carrinhoService.clearCarrinho(user.getId());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new RespostaAPI(Instant.now(), "Carrinho com id: " + user.getId() + " limpo com sucesso."));
     }
