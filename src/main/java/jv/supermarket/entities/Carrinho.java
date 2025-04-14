@@ -52,7 +52,7 @@ public class Carrinho {
     }
 
     public BigDecimal getValorTotal() {
-        return this.itens.stream().map(CarrinhoItem::getPrecoTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return this.itens.stream().map(CarrinhoItem::getSubTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public Usuario getUser() {

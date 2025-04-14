@@ -61,7 +61,7 @@ public class CarrinhoItem {
         this.quantidade = quantidade;
     }
     
-    public BigDecimal getPrecoTotal() {
+    public BigDecimal getSubTotal() {
         return produto.getPreco().multiply(new BigDecimal(quantidade));
     }
     public BigDecimal getPrecoUnitario(){

@@ -8,15 +8,15 @@ public class CarrinhoItemDTO {
 
     private int quantidade;
 
-    private BigDecimal precoTotal;
+    private BigDecimal subTotal;
 
     public CarrinhoItemDTO() {
     }
 
-    public CarrinhoItemDTO(ProdutoDTO produto, int quantidade, BigDecimal precoTotal) {
+    public CarrinhoItemDTO(ProdutoDTO produto, int quantidade, BigDecimal subTotal) {
         this.produto = produto;
         this.quantidade = quantidade;
-        this.precoTotal = precoTotal;
+        this.subTotal = subTotal;
     }
 
     public ProdutoDTO getProduto() {
@@ -35,12 +35,12 @@ public class CarrinhoItemDTO {
         this.quantidade = quantidade;
     }
 
-    public BigDecimal getPrecoTotal() {
-        return precoTotal;
+    public BigDecimal getSubTotal() {
+        return subTotal;
     }
 
-    public void setPrecoTotal(BigDecimal precoTotal) {
-        this.precoTotal = precoTotal;
+    public void setSubTotal(BigDecimal subTotal) {
+        this.subTotal = subTotal;
     }
 
 }

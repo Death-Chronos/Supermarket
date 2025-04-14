@@ -55,7 +55,7 @@ public class CarrinhoService {
         CarrinhoItemDTO dto = new CarrinhoItemDTO();
 
         dto.setProduto(produtoService.convertToDTO(item.getProduto()));
-        dto.setPrecoTotal(item.getPrecoTotal());
+        dto.setSubTotal(item.getSubTotal());
         dto.setQuantidade(item.getQuantidade());
 
         return dto;
